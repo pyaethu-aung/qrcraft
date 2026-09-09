@@ -2,6 +2,7 @@
   "name": "@qrcraft/core",
   "private": true,
   "version": "0.1.0",
+  "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -9,8 +10,7 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./i18n/en.json": "./src/i18n/en.json",
-    "./i18n/es.json": "./src/i18n/es.json"
+    "./i18n/*.json": "./src/i18n/*.json"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
