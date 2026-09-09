@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { CryptoForm } from '../CryptoForm'
-import type { CryptoConfig } from '../../../../types/qr'
+import type { CryptoConfig } from '@qrcraft/core'
 
 const BTC = 'bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4'
 const ETH = '0x52908400098527886E0F7030069857D2E4169EE7'

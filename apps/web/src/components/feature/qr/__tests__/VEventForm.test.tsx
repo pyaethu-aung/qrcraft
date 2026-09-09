@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { VEventForm } from '../VEventForm'
-import type { VEventConfig } from '../../../../types/qr'
+import type { VEventConfig } from '@qrcraft/core'
 
 const defaultConfig: VEventConfig = {
   summary: '',

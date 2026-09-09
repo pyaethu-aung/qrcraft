@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, type ReactNode } from 'react'
 import { useTheme } from './useTheme'
-import type { ThemeContextType } from '../types/theme'
+import type { ThemeContextType } from '@qrcraft/core'
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 

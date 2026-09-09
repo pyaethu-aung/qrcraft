@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { buildVCardString } from '../vcard'
-import type { VCardConfig } from '../../types/qr'
+import { buildVCardString } from './vcard'
+import type { VCardConfig } from '../types/qr'
 
 const base: VCardConfig = {
   firstName: 'Jane',

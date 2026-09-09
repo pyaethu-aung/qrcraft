@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { ScanHistory } from '../ScanHistory'
 import type { ScanHistoryEntry } from '../../../../hooks/useScanHistory'
-import type { DecodedContentType } from '../../../../utils/qrClassify'
+import type { DecodedContentType } from '@qrcraft/core'
 
 const typeLabel = (type: DecodedContentType) => type.toUpperCase()
 

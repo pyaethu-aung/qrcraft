@@ -2,10 +2,10 @@ import { useState, useId } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import { EMAIL_REGEX } from '../../../utils/email'
-import { PHONE_REGEX } from '../../../utils/phone'
-import { URL_REGEX } from '../../../utils/url'
-import type { VCardConfig } from '../../../types/qr'
+import { EMAIL_REGEX } from '@qrcraft/core'
+import { PHONE_REGEX } from '@qrcraft/core'
+import { URL_REGEX } from '@qrcraft/core'
+import type { VCardConfig } from '@qrcraft/core'
 
 interface VCardFormProps {
   config: VCardConfig

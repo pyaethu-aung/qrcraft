@@ -1,7 +1,7 @@
 import { render, waitFor } from '@testing-library/react';
 import { describe, expect, it, beforeEach } from 'vitest';
 import { HelmetProvider } from 'react-helmet-async';
-import type { SoftwareApplicationJSONLD } from '../../../types/seo';
+import type { SoftwareApplicationJSONLD } from '@qrcraft/core';
 import SEOHead from '../SEOHead';
 
 describe('SEOHead Component', () => {

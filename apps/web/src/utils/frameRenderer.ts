@@ -8,8 +8,8 @@
  * translate it. The frame grows the canvas around the QR instead.
  */
 
-import type { QRFramePosition, QRFrameStyle } from '../types/qr'
-import { readableTextColor } from './contrast'
+import type { QRFramePosition, QRFrameStyle } from '@qrcraft/core'
+import { readableTextColor } from '@qrcraft/core'
 
 export interface FrameRender {
   /** Square canvas edge in user units. */

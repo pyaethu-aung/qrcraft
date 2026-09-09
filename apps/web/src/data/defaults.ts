@@ -1,4 +1,4 @@
-import type { QRConfig } from '../types/qr'
+import type { QRConfig } from '@qrcraft/core'
 
 /**
  * Warm ink on warm paper, not pure black on pure white. PRODUCT.md's first

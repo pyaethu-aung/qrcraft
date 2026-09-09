@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { COUNTRIES } from '../../data/countries'
-import { countryFlag, countryName, filterCountries, findCountry, matchDialCode, sortedCountries } from '../country'
+import { COUNTRIES } from '../data/countries'
+import { countryFlag, countryName, filterCountries, findCountry, matchDialCode, sortedCountries } from './country'
 
 describe('countryFlag', () => {
   it('maps an ISO code to its flag emoji', () => {

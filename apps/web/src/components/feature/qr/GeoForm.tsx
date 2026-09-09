@@ -4,8 +4,8 @@ import { Input } from '../../common/Input'
 import { Callout } from '../../common/Callout'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { useTimedState } from '../../../hooks/useTimedState'
-import { parseLatitude, parseLongitude } from '../../../utils/geo'
-import type { GeoConfig } from '../../../types/qr'
+import { parseLatitude, parseLongitude } from '@qrcraft/core'
+import type { GeoConfig } from '@qrcraft/core'
 
 interface GeoFormProps {
   config: GeoConfig

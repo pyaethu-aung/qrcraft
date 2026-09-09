@@ -9,8 +9,8 @@ import {
   toTimedValue,
   veventDraftLength,
   VEVENT_PAYLOAD_WARN,
-} from '../vevent'
-import type { VEventConfig } from '../../types/qr'
+} from './vevent'
+import type { VEventConfig } from '../types/qr'
 
 const base: VEventConfig = {
   summary: 'Team dinner',

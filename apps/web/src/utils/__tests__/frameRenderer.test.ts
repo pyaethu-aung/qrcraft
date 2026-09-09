@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { renderFrame } from '../frameRenderer'
-import type { QRFrameStyle } from '../../types/qr'
+import type { QRFrameStyle } from '@qrcraft/core'
 
 const STYLES: Exclude<QRFrameStyle, 'None'>[] = ['Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks', 'Photo', 'Circle']
 const Q = 250

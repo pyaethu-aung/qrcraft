@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { VCardForm } from '../VCardForm'
-import type { VCardConfig } from '../../../../types/qr'
+import type { VCardConfig } from '@qrcraft/core'
 
 const defaultConfig: VCardConfig = {
   firstName: '',

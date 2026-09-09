@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { batchFilename, slugifyValue } from '../batchFilename'
+import { batchFilename, slugifyValue } from './batchFilename'
 
 describe('slugifyValue', () => {
   it('strips the URL scheme and www prefix', () => {

@@ -4,7 +4,7 @@ import { Check, ChevronDown, Search } from 'lucide-react'
 import clsx from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { useLocaleContext } from '../../hooks/LocaleProvider'
-import { countryFlag, countryName, filterCountries, findCountry } from '../../utils/country'
+import { countryFlag, countryName, filterCountries, findCountry } from '@qrcraft/core'
 
 export interface CountryCodeSelectProps {
   /** Selected ISO 3166-1 alpha-2 code, or null when no country is chosen. */

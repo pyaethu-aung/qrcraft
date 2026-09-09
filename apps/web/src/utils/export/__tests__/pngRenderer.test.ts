@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import type { QRDesignConfig } from '../../../types/qr'
+import type { QRDesignConfig } from '@qrcraft/core'
 
 vi.mock('../../qrSvgComposer', () => ({
   composeQrSvg: vi.fn(() => ({

@@ -8,7 +8,7 @@ import {
   getHydratedSecrets,
   type ShareConfigInput,
 } from '../shareConfig'
-import type { QRDesignConfig, QRFrameConfig } from '../../types/qr'
+import type { QRDesignConfig, QRFrameConfig } from '@qrcraft/core'
 import { DEFAULT_QR_CONFIG } from '../../data/defaults'
 
 const design: QRDesignConfig = {

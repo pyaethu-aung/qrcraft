@@ -5,8 +5,8 @@ import {
   defaultFixedValues,
   getCsvContentType,
   NO_COLUMN,
-} from '../csvContentTypes'
-import type { ParsedBatchCsv } from '../parseBatchCsv'
+} from './csvContentTypes'
+import type { ParsedBatchCsv } from './parseBatchCsv'
 
 function grid(headers: string[], rows: string[][]): ParsedBatchCsv {
   return { headers, rows }

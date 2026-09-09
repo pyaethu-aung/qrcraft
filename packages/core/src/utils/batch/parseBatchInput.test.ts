@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseBatchInput, BATCH_MAX_LINES } from '../parseBatchInput'
+import { parseBatchInput, BATCH_MAX_LINES } from './parseBatchInput'
 
 describe('parseBatchInput', () => {
   it('returns empty values for empty or whitespace-only input', () => {

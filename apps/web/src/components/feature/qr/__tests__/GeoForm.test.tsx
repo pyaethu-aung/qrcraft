@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { GeoForm } from '../GeoForm'
-import type { GeoConfig } from '../../../../types/qr'
+import type { GeoConfig } from '@qrcraft/core'
 
 const defaultConfig: GeoConfig = {
   latitude: '',

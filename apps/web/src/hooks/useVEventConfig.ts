@@ -1,6 +1,6 @@
 import { useMemo, useRef } from 'react'
-import type { VEventConfig } from '../types/qr'
-import { buildVEventString, timePartOf, toAllDayValue, toTimedValue } from '../utils/vevent'
+import type { VEventConfig } from '@qrcraft/core'
+import { buildVEventString, timePartOf, toAllDayValue, toTimedValue } from '@qrcraft/core'
 import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_VEVENT_CONFIG: VEventConfig = {

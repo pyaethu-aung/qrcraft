@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import en from '../en.json'
+import en from '@qrcraft/core/i18n/en.json'
 
 const localeKey = 'hero.title' as const
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocaleContext } from './LocaleProvider'
-import type { ShareMethod, SharePayload, ShareRequest } from '../types/qr'
+import type { ShareMethod, SharePayload, ShareRequest } from '@qrcraft/core'
 import {
   canShareFiles,
   copyPayloadToClipboard,

@@ -4,7 +4,7 @@ import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { composeQrSvg } from '../../../utils/qrSvgComposer'
 import { compositeLoadedLogoOnCanvas } from '../../../utils/logoCompositor'
 import { DEFAULT_QR_CONFIG } from '../../../data/defaults'
-import type { QRConfig, QRDesignConfig, QRFrameConfig } from '../../../types/qr'
+import type { QRConfig, QRDesignConfig, QRFrameConfig } from '@qrcraft/core'
 
 export interface QRPreviewProps extends QRConfig {
   designConfig?: QRDesignConfig

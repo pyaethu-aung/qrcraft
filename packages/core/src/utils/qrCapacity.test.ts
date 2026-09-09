@@ -4,7 +4,7 @@ import {
   CAPACITY_NEAR_LIMIT_RATIO,
   contentByteLength,
   getCapacityStatus,
-} from '../qrCapacity'
+} from './qrCapacity'
 
 describe('contentByteLength', () => {
   it('counts ASCII as one byte each', () => {

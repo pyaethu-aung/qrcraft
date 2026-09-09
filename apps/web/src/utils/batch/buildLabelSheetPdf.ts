@@ -18,7 +18,7 @@ import {
   getLabelPreset,
   type LabelPresetId,
 } from './labelSheetLayout'
-import { mapWithConcurrency } from '../concurrency'
+import { mapWithConcurrency } from '@qrcraft/core'
 
 // Each render is an independent canvas/Image round-trip with no shared mutable state, so
 // a bounded pool of concurrent renders cuts wall-clock time for large sheets.

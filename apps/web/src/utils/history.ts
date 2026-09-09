@@ -1,4 +1,4 @@
-import type { QRErrorCorrectionLevel } from '../types/qr'
+import type { QRErrorCorrectionLevel } from '@qrcraft/core'
 import { createLocalStorageList } from './localStorageList'
 
 export interface HistoryEntry {

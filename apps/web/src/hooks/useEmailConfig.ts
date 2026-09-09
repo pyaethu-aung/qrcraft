@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import type { EmailConfig } from '../types/qr'
-import { buildEmailString } from '../utils/email'
+import type { EmailConfig } from '@qrcraft/core'
+import { buildEmailString } from '@qrcraft/core'
 import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_EMAIL_CONFIG: EmailConfig = {

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import type { SmsConfig } from '../types/qr'
-import { buildSmsString } from '../utils/sms'
+import type { SmsConfig } from '@qrcraft/core'
+import { buildSmsString } from '@qrcraft/core'
 import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_SMS_CONFIG: SmsConfig = {

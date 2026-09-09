@@ -1,6 +1,5 @@
-import type { LocaleRegistry } from '../data/i18n'
-
-export type SupportedLocale = keyof LocaleRegistry
+import type { SupportedLocale } from '../i18n/locales'
+export type { SupportedLocale }
 
 export interface LocaleMetadata {
   code: SupportedLocale

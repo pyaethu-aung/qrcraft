@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { buildGeoString, parseLatitude, parseLongitude } from '../geo'
-import type { GeoConfig } from '../../types/qr'
+import { buildGeoString, parseLatitude, parseLongitude } from './geo'
+import type { GeoConfig } from '../types/qr'
 
 const sf: GeoConfig = {
   latitude: '37.7870',

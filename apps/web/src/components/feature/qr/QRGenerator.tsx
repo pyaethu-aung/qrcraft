@@ -25,10 +25,10 @@ import { useVEventConfig } from '../../../hooks/useVEventConfig'
 import { useCryptoConfig } from '../../../hooks/useCryptoConfig'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
-import { isEndBeforeStart } from '../../../utils/vevent'
-import { isValidCryptoAddress } from '../../../utils/crypto'
+import { isEndBeforeStart } from '@qrcraft/core'
+import { isValidCryptoAddress } from '@qrcraft/core'
 import { buildShareUrl, type ShareContentData } from '../../../utils/shareConfig'
-import type { QRContentMode } from '../../../types/qr'
+import type { QRContentMode } from '@qrcraft/core'
 
 const CONTENT_MODE_KEY = 'qr-generator:draft:content-mode'
 const CONTENT_MODES: readonly QRContentMode[] = ['text', 'wifi', 'vcard', 'email', 'sms', 'tel', 'geo', 'vevent', 'crypto']

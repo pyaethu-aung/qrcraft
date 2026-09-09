@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { PhoneNumberField } from '../PhoneNumberField'
-import { PHONE_REGEX } from '../../../../utils/phone'
+import { PHONE_REGEX } from '@qrcraft/core'
 
 const baseProps = {
   numberRegex: PHONE_REGEX,

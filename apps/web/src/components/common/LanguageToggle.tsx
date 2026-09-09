@@ -1,7 +1,7 @@
 import { ChevronDown, Globe } from 'lucide-react'
 import { useLocaleContext } from '../../hooks/LocaleProvider'
 import { localeCodes, locales } from '../../data/i18n'
-import type { SupportedLocale } from '../../types/i18n'
+import type { SupportedLocale } from '@qrcraft/core'
 
 export function LanguageToggle() {
   const { locale, setLocale, translate } = useLocaleContext()

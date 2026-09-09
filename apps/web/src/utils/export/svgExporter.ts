@@ -1,4 +1,4 @@
-import type { QRConfig, QRDesignConfig, QRFrameConfig } from '../../types/qr'
+import type { QRConfig, QRDesignConfig, QRFrameConfig } from '@qrcraft/core'
 import { composeQrSvg } from '../qrSvgComposer'
 import { rasterizeLogoForSvg } from '../logoCompositor'
 import { DEFAULT_QR_CONFIG } from '../../data/defaults'

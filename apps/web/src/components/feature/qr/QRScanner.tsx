@@ -9,8 +9,8 @@ import { useScanHistory, type ScanHistoryEntry } from '../../../hooks/useScanHis
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
 import { useFileDrop } from '../../../hooks/useFileDrop'
-import { classifyDecoded, getOpenableUrl, type DecodedContentType } from '../../../utils/qrClassify'
-import type { TranslationKey } from '../../../types/i18n'
+import { classifyDecoded, getOpenableUrl, type DecodedContentType } from '@qrcraft/core'
+import type { TranslationKey } from '@qrcraft/core'
 
 export interface QRScannerProps {
   /** Round-trips a decoded value into the generator's Text mode and switches back to it. */

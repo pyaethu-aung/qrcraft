@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { defaultLocale, getCopy, localeCodes, locales } from '../data/i18n'
-import type { SupportedLocale, SeoMetadata, TranslationKey } from '../types/i18n'
+import type { SupportedLocale, SeoMetadata, TranslationKey } from '@qrcraft/core'
 
 const STORAGE_KEY = 'qr-generator:locale-preference'
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { relativeLuminance, wcagContrastRatio, readableTextColor } from '../contrast'
+import { relativeLuminance, wcagContrastRatio, readableTextColor } from './contrast'
 
 describe('relativeLuminance', () => {
   it('returns 1 for white and 0 for black', () => {

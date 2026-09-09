@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { phoneFeedback } from '../../../utils/phone'
+import { phoneFeedback } from '@qrcraft/core'
 
 interface PhoneNumberFeedbackProps {
   /** The raw, user-typed number (formatting preserved). */

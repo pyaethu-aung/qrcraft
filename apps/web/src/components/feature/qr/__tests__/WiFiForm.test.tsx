@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { WiFiForm } from '../WiFiForm'
-import type { WiFiConfig } from '../../../../types/qr'
+import type { WiFiConfig } from '@qrcraft/core'
 
 const defaultConfig: WiFiConfig = {
   ssid: '',

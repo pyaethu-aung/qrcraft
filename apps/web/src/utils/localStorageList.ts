@@ -1,4 +1,4 @@
-import { truncateWithEllipsis } from './textFormat'
+import { truncateWithEllipsis } from '@qrcraft/core'
 import { readJSON, writeJSON, removeItem } from './safeLocalStorage'
 
 export interface ListEntryBase {

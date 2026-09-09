@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
-import type { QRDesignConfig, QRErrorCorrectionLevel, QRFrameConfig } from '../types/qr'
+import type { QRDesignConfig, QRErrorCorrectionLevel, QRFrameConfig } from '@qrcraft/core'
 import { downloadBlob } from '../utils/download'
 import { exportSvg } from '../utils/export/svgExporter'
 import { renderQrPngBlob } from '../utils/export/pngRenderer'
 import { getHydratedAppearance } from '../utils/shareConfig'
 import { loadPersistedAppearance, persistAppearance } from '../utils/persistedAppearance'
-import { getCapacityStatus } from '../utils/qrCapacity'
+import { getCapacityStatus } from '@qrcraft/core'
 import { readRaw, writeRaw } from '../utils/safeLocalStorage'
 
 export const INPUT_LENGTH_LIMIT = 2000

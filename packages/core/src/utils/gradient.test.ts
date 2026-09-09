@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { buildFgGradientDefs } from '../gradient'
-import type { QRGradient } from '../../types/qr'
+import { buildFgGradientDefs } from './gradient'
+import type { QRGradient } from '../types/qr'
 
 const linear = (overrides: Partial<QRGradient> = {}): QRGradient => ({
   type: 'linear',

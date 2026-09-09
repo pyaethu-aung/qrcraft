@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import type { VCardConfig } from '../types/qr'
-import { buildVCardString } from '../utils/vcard'
+import type { VCardConfig } from '@qrcraft/core'
+import { buildVCardString } from '@qrcraft/core'
 import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_VCARD_CONFIG: VCardConfig = {

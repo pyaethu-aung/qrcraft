@@ -14,7 +14,7 @@ import {
   FileText,
 } from 'lucide-react'
 import type { ScanHistoryEntry } from '../../../hooks/useScanHistory'
-import type { DecodedContentType } from '../../../utils/qrClassify'
+import type { DecodedContentType } from '@qrcraft/core'
 import { useTimedState } from '../../../hooks/useTimedState'
 
 interface ScanHistoryProps {

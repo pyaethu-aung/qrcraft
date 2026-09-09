@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { truncateWithEllipsis } from '../textFormat'
+import { truncateWithEllipsis } from './textFormat'
 
 describe('truncateWithEllipsis', () => {
   it('returns the value unchanged when at or under the limit', () => {

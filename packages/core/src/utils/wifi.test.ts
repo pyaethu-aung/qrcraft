@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildWifiString } from '../wifi'
+import { buildWifiString } from './wifi'
 
 describe('buildWifiString', () => {
   it('returns empty string when SSID is empty', () => {
