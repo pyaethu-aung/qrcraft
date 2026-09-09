@@ -63,7 +63,9 @@ and scrolling. That trade is the whole reason for choosing it.
 ### Design reference
 
 The screens are already designed, per platform, and should be treated as the visual
-contract: **https://claude.ai/code/artifact/38487c74-f77c-4edc-9774-75e8701e1520**
+contract. Sources live beside this spec in
+[`qrcraft-mobile-design/`](qrcraft-mobile-design/README.md); the published canvas is
+**https://claude.ai/code/artifact/38487c74-f77c-4edc-9774-75e8701e1520**
 
 Nine screens each for iOS and Android, plus a platform-mapping sheet. Every colour, radius,
 type size and control height is lifted from `DESIGN.md`, not re-invented.

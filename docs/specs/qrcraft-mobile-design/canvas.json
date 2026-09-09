@@ -1,0 +1,73 @@
+{
+  "pages": [
+    { "id": "ios", "name": "iOS 26 · Liquid Glass" },
+    { "id": "android", "name": "Android · Material 3" },
+    { "id": "contract", "name": "Platform contract" }
+  ],
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 393, "h": 852, "title": "Generate", "page": "ios" },
+    { "file": "IosForm.dc.html", "x": 480, "y": 0, "w": 393, "h": 852, "title": "Structured form (Wi-Fi)", "page": "ios" },
+    { "file": "IosDesignSheet.dc.html", "x": 960, "y": 0, "w": 393, "h": 852, "title": "Design · basics", "page": "ios" },
+    { "file": "IosDesignAdvanced.dc.html", "x": 1440, "y": 0, "w": 393, "h": 852, "title": "Design · advanced", "page": "ios" },
+    { "file": "IosGenerateDark.dc.html", "x": 1920, "y": 0, "w": 393, "h": 852, "title": "Generate · dark", "page": "ios" },
+    { "file": "IosScan.dc.html", "x": 0, "y": 1010, "w": 393, "h": 852, "title": "Scan", "page": "ios" },
+    { "file": "IosScanResult.dc.html", "x": 480, "y": 1010, "w": 393, "h": 852, "title": "Scan result", "page": "ios" },
+    { "file": "IosSaved.dc.html", "x": 960, "y": 1010, "w": 393, "h": 852, "title": "Saved", "page": "ios" },
+    { "file": "IosSettings.dc.html", "x": 1440, "y": 1010, "w": 393, "h": 852, "title": "Settings", "page": "ios" },
+
+    { "file": "AndroidGenerate.dc.html", "x": 0, "y": 0, "w": 412, "h": 915, "title": "Generate", "page": "android" },
+    { "file": "AndroidForm.dc.html", "x": 500, "y": 0, "w": 412, "h": 915, "title": "Structured form (Wi-Fi)", "page": "android" },
+    { "file": "AndroidDesignSheet.dc.html", "x": 1000, "y": 0, "w": 412, "h": 915, "title": "Design · basics", "page": "android" },
+    { "file": "AndroidDesignAdvanced.dc.html", "x": 1500, "y": 0, "w": 412, "h": 915, "title": "Design · advanced", "page": "android" },
+    { "file": "AndroidGenerateDark.dc.html", "x": 2000, "y": 0, "w": 412, "h": 915, "title": "Generate · dark", "page": "android" },
+    { "file": "AndroidScan.dc.html", "x": 0, "y": 1080, "w": 412, "h": 915, "title": "Scan", "page": "android" },
+    { "file": "AndroidScanResult.dc.html", "x": 500, "y": 1080, "w": 412, "h": 915, "title": "Scan result", "page": "android" },
+    { "file": "AndroidSaved.dc.html", "x": 1000, "y": 1080, "w": 412, "h": 915, "title": "Saved", "page": "android" },
+    { "file": "AndroidSettings.dc.html", "x": 1500, "y": 1080, "w": 412, "h": 915, "title": "Settings", "page": "android" },
+
+    { "file": "Platforms.dc.html", "x": 0, "y": 0, "w": 1080, "h": 1360, "title": "iOS vs Android contract", "page": "contract" }
+  ],
+  "annotations": [
+    {
+      "id": "ios-note",
+      "x": 0,
+      "y": -178,
+      "w": 940,
+      "text": "iOS 26 · HIG + Liquid Glass\n\nFloating glass tab bar inset from the edges, large collapsing titles, capsule controls, concentric radii, layered translucency instead of drop shadows. Brand terracotta is the tint colour.",
+      "page": "ios"
+    },
+    {
+      "id": "ios-caveat",
+      "x": 1000,
+      "y": -178,
+      "w": 940,
+      "text": "Glass is approximated with backdrop blur, which reads correctly at mockup fidelity. In React Native it needs a native module over UIVisualEffectView, with a solid surface-raised fallback below iOS 26.",
+      "page": "ios"
+    },
+    {
+      "id": "android-note",
+      "x": 0,
+      "y": -178,
+      "w": 960,
+      "text": "Android · Material 3\n\nNavigation bar flush to the edge with a pill indicator, extended FAB for the primary action, outlined text fields, segmented buttons with a check icon, tonal surfaces rather than glass, M3 shape scale.",
+      "page": "android"
+    },
+    {
+      "id": "android-caveat",
+      "x": 1020,
+      "y": -178,
+      "w": 960,
+      "text": "The tonal palette derives from the same brand source colour, so the app stays QRCraft rather than following the wallpaper. Enable dynamic colour only if you want Material You to override the brand.",
+      "page": "android"
+    },
+    {
+      "id": "contract-note",
+      "x": 0,
+      "y": -140,
+      "w": 1080,
+      "text": "Side-by-side element mapping, the shared logic package, and the implementation traps worth knowing before you start. PNG is now the only export on mobile.",
+      "page": "contract"
+    }
+  ],
+  "launch": { "view": "canvas", "page": "ios" }
+}

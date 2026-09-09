@@ -45,3 +45,7 @@ playwright/.cache/
 # impeccable: platform-specific engine binary (12MB, darwin-arm64 only).
 # The launcher re-downloads it on first run.
 .claude/skills/impeccable/scripts/bin/
+
+# Design canvas build output: the seeded page is ~2.8 MB because the canvas editor
+# is baked into it. Regenerate from docs/specs/qrcraft-mobile-design/ instead.
+qrcraft-react-native.html
