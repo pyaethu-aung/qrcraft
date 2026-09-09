@@ -60,7 +60,13 @@ export default defineConfig([
     },
   },
   {
-    // apps/mcp is a Node process (stdio/HTTP transports), not a browser context.
+    // apps/mcp is a Node process (stdio/HTTP transports), not a browser
+    // context, so it needs Node globals (process, console, Buffer, ...)
+    // recognized. ESLint's flat config merges languageOptions.globals across
+    // every matching block rather than replacing it, so this adds to (not
+    // replaces) the browser globals the earlier **/*.{ts,tsx} block already
+    // declares for these files — harmless (declaring an unused global as
+    // known doesn't cause false positives), just not full isolation.
     files: ['apps/mcp/**/*.ts'],
     languageOptions: {
       globals: globals.node,
