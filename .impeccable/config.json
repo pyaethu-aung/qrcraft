@@ -17,6 +17,12 @@
         ],
         "createdAt": "2026-09-05T14:52:37.821Z",
         "reason": "Playwright test simulating 200% browser text zoom (WCAG 1.4.4 check), not a UI font size. Scoped to this spec file."
+      },
+      {
+        "rule": "overused-font",
+        "value": "geist mono",
+        "createdAt": "2026-09-09T03:06:04.919Z",
+        "reason": "DESIGN.md:174 records this as 'Deliberate, not aspirational' after rejecting Inter and Playfair; DESIGN.md:193 'One-Face Rule' scopes it to machine values only (hex codes, batch list) with the system stack for all UI type. Verified in use at CapacityCounter.tsx:76, QRControls.tsx:223, BatchGenerator.tsx:396,504. Not user-confirmed in session; evidence is the project design doc."
       }
     ]
   }
