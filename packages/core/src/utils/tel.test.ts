@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { buildTelString, TEL_PHONE_REGEX } from '../tel'
-import type { TelConfig } from '../../types/qr'
+import { buildTelString, TEL_PHONE_REGEX } from './tel'
+import type { TelConfig } from '../types/qr'
 
 const base: TelConfig = {
   number: '+15551234567',

@@ -5,7 +5,7 @@
  * code path. No DOM preview required.
  */
 
-import type { QRDesignConfig, QRErrorCorrectionLevel, QRFrameConfig } from '../../types/qr'
+import type { QRDesignConfig, QRErrorCorrectionLevel, QRFrameConfig } from '@qrcraft/core'
 import { composeQrSvg } from '../qrSvgComposer'
 import { compositeLogoOnCanvas } from '../logoCompositor'
 import { QR_SIZE_DOWNLOAD } from '../../data/defaults'

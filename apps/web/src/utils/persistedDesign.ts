@@ -14,7 +14,7 @@ import type {
   QRGradientDirection,
   QRFrameConfig,
   QRFrameStyle,
-} from '../types/qr'
+} from '@qrcraft/core'
 import { DEFAULT_FRAME_COLOR } from '../data/defaults'
 import { readJSON } from './safeLocalStorage'
 

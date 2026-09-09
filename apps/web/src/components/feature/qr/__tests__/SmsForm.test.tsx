@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { SmsForm } from '../SmsForm'
-import type { SmsConfig } from '../../../../types/qr'
+import type { SmsConfig } from '@qrcraft/core'
 
 const defaultConfig: SmsConfig = {
   number: '',

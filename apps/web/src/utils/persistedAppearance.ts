@@ -5,7 +5,7 @@
  * produces inherits the look the user last configured.
  */
 
-import type { QRErrorCorrectionLevel } from '../types/qr'
+import type { QRErrorCorrectionLevel } from '@qrcraft/core'
 import { DEFAULT_QR_CONFIG } from '../data/defaults'
 import { readJSON, writeJSON } from './safeLocalStorage'
 

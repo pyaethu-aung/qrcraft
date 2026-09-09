@@ -4,8 +4,8 @@ import { Input } from '../../common/Input'
 import { Textarea } from '../../common/Textarea'
 import { Callout } from '../../common/Callout'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import { buildEmailString, EMAIL_REGEX } from '../../../utils/email'
-import type { EmailConfig } from '../../../types/qr'
+import { buildEmailString, EMAIL_REGEX } from '@qrcraft/core'
+import type { EmailConfig } from '@qrcraft/core'
 
 const EMAIL_PAYLOAD_WARN = 300
 

@@ -4,8 +4,8 @@ import { Input } from '../../common/Input'
 import { CountryCodeSelect } from '../../common/CountryCodeSelect'
 import { PhoneNumberFeedback } from './PhoneNumberFeedback'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import { phoneFeedback } from '../../../utils/phone'
-import { findCountry, matchDialCode } from '../../../utils/country'
+import { phoneFeedback } from '@qrcraft/core'
+import { findCountry, matchDialCode } from '@qrcraft/core'
 
 interface PhoneNumberFieldProps {
   /** The combined number owned upstream (dial code + local part, or free text). */

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import type { GeoConfig } from '../types/qr'
-import { buildGeoString } from '../utils/geo'
+import type { GeoConfig } from '@qrcraft/core'
+import { buildGeoString } from '@qrcraft/core'
 import { getHydratedSecrets } from '../utils/shareConfig'
 import { usePersistedConfig } from './usePersistedConfig'
 

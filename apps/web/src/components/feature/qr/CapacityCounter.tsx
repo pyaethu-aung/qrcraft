@@ -1,5 +1,5 @@
-import { getCapacityStatus } from '../../../utils/qrCapacity'
-import type { QRErrorCorrectionLevel } from '../../../types/qr'
+import { getCapacityStatus } from '@qrcraft/core'
+import type { QRErrorCorrectionLevel } from '@qrcraft/core'
 
 export interface CapacityCounterProps {
   /** Current content of the text field — supplies the displayed `used / max` count. */

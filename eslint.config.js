@@ -9,9 +9,9 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 export default defineConfig([
   globalIgnores([
     'node_modules',
-    'dist',
+    '**/dist/**',
     'dist-ssr',
-    'coverage',
+    '**/coverage/**',
     'build',
     '.cache',
     '.git',
@@ -46,12 +46,43 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
       parserOptions: {
-        project: ['./apps/web/tsconfig.app.json', './apps/web/tsconfig.node.json'],
+        project: [
+          './apps/web/tsconfig.app.json',
+          './apps/web/tsconfig.node.json',
+          './packages/core/tsconfig.json',
+        ],
         tsconfigRootDir: import.meta.dirname,
       },
     },
     rules: {
       'react-refresh/only-export-components': 'off',
+    },
+  },
+  {
+    // FR-003: @qrcraft/core must stay free of React, the DOM, and storage
+    // APIs so a non-browser consumer (apps/mcp, a future mobile app) can
+    // import it unmodified.
+    files: ['packages/core/src/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['react', 'react-dom', 'react/*', 'react-dom/*'],
+              message: '@qrcraft/core must stay free of React. Platform code belongs in an app.',
+            },
+          ],
+        },
+      ],
+      'no-restricted-globals': [
+        'error',
+        'document',
+        'window',
+        'localStorage',
+        'sessionStorage',
+        'navigator',
+      ],
     },
   },
   {

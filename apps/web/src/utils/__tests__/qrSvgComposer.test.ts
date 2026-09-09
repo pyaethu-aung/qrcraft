@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { composeQrSvg } from '../qrSvgComposer'
-import type { QRDesignConfig, QRFrameConfig } from '../../types/qr'
+import type { QRDesignConfig, QRFrameConfig } from '@qrcraft/core'
 
 const design: QRDesignConfig = {
   eyeFrameShape: 'Square',

@@ -1,4 +1,4 @@
-import type { SeoMetadata } from '../types/i18n'
+import type { SeoMetadata } from '@qrcraft/core'
 
 type MetaAttr = 'name' | 'property'
 

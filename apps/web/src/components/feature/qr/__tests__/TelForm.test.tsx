@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { TelForm } from '../TelForm'
-import type { TelConfig } from '../../../../types/qr'
+import type { TelConfig } from '@qrcraft/core'
 
 const defaultConfig: TelConfig = {
   number: '',

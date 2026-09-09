@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { Theme } from '../types/theme'
+import type { Theme } from '@qrcraft/core'
 
 const STORAGE_KEY = 'qr-generator:theme-preference'
 const isBrowser = typeof window !== 'undefined'

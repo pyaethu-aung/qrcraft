@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mapWithConcurrency } from '../concurrency'
+import { mapWithConcurrency } from './concurrency'
 
 describe('mapWithConcurrency', () => {
   it('returns results in input order regardless of completion order', async () => {

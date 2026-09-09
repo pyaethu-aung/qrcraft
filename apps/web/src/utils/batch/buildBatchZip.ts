@@ -6,13 +6,13 @@
  */
 
 import { zipSync } from 'fflate'
-import type { QRDesignConfig, QRErrorCorrectionLevel, QRFrameConfig } from '../../types/qr'
+import type { QRDesignConfig, QRErrorCorrectionLevel, QRFrameConfig } from '@qrcraft/core'
 import { QR_SIZE_DOWNLOAD } from '../../data/defaults'
 import { exportSvg } from '../export/svgExporter'
 import { renderQrPngBlob } from '../export/pngRenderer'
 import { exportPdf } from '../export/pdfExporter'
-import { batchFilename } from './batchFilename'
-import { mapWithConcurrency } from '../concurrency'
+import { batchFilename } from '@qrcraft/core'
+import { mapWithConcurrency } from '@qrcraft/core'
 
 export type BatchFormat = 'png' | 'svg' | 'pdf'
 

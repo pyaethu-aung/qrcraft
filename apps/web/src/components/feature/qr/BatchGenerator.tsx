@@ -5,7 +5,7 @@ import {
   parseBatchCsv,
   csvRowsToCommaText,
   type ParsedBatchCsv,
-} from '../../../utils/batch/parseBatchCsv'
+} from '@qrcraft/core'
 import {
   CSV_CONTENT_TYPES,
   getCsvContentType,
@@ -14,8 +14,8 @@ import {
   buildCsvValues,
   NO_COLUMN,
   type CsvBuildResult,
-} from '../../../utils/batch/csvContentTypes'
-import type { QRContentMode } from '../../../types/qr'
+} from '@qrcraft/core'
+import type { QRContentMode } from '@qrcraft/core'
 
 import { PillGroup } from '../../common/PillGroup'
 import { Callout } from '../../common/Callout'

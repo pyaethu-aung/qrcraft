@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { EmailForm } from '../EmailForm'
-import type { EmailConfig } from '../../../../types/qr'
+import type { EmailConfig } from '@qrcraft/core'
 
 const defaultConfig: EmailConfig = {
   to: '',

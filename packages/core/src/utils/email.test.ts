@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { buildEmailString } from '../email'
-import type { EmailConfig } from '../../types/qr'
+import { buildEmailString } from './email'
+import type { EmailConfig } from '../types/qr'
 
 const base: EmailConfig = {
   to: 'jane@example.com',

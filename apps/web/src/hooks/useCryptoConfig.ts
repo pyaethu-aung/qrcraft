@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import type { CryptoConfig } from '../types/qr'
-import { buildCryptoString } from '../utils/crypto'
+import type { CryptoConfig } from '@qrcraft/core'
+import { buildCryptoString } from '@qrcraft/core'
 import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_CRYPTO_CONFIG: CryptoConfig = {

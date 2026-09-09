@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { describe, expect, it, beforeEach, afterEach, vi, type MockedFunction } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { QRGenerator } from '../QRGenerator'
-import type { SharePayload } from '../../../../types/qr'
+import type { SharePayload } from '@qrcraft/core'
 
 type CreateSharePayloadFn = (canvas: HTMLCanvasElement | null) => Promise<SharePayload>
 type PayloadToFileFn = (payload: SharePayload) => File

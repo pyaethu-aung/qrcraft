@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import type { TelConfig } from '../types/qr'
-import { buildTelString } from '../utils/tel'
+import type { TelConfig } from '@qrcraft/core'
+import { buildTelString } from '@qrcraft/core'
 import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_TEL_CONFIG: TelConfig = {

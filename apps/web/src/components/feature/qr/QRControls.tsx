@@ -17,7 +17,7 @@ import { CapacityCounter } from './CapacityCounter'
 import { DEFAULT_FRAME_COLOR } from '../../../data/defaults'
 import { useFileDrop } from '../../../hooks/useFileDrop'
 import { readRaw, writeRaw } from '../../../utils/safeLocalStorage'
-import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, TelConfig, GeoConfig, VEventConfig, CryptoConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition, QRGradient, QRGradientType, QRGradientDirection } from '../../../types/qr'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, TelConfig, GeoConfig, VEventConfig, CryptoConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition, QRGradient, QRGradientType, QRGradientDirection } from '@qrcraft/core'
 
 /** Seeded end color when a gradient is first enabled (indigo). The start seeds from fgColor. */
 const DEFAULT_GRADIENT_END = '#4F46E5'
@@ -320,8 +320,8 @@ export interface QRControlsProps {
   onEyeFrameColorChange: (color: string | null) => void
   eyeCenterColor: string | null
   onEyeCenterColorChange: (color: string | null) => void
-  pixelPattern: import('../../../types/qr').QRPixelPattern
-  onPixelPatternChange: (pattern: import('../../../types/qr').QRPixelPattern) => void
+  pixelPattern: import('@qrcraft/core').QRPixelPattern
+  onPixelPatternChange: (pattern: import('@qrcraft/core').QRPixelPattern) => void
   eyeFrameLabel?: string
   eyeCenterLabel?: string
   eyeFrameColorLabel?: string
@@ -330,7 +330,7 @@ export interface QRControlsProps {
   pixelPatternLabel?: string
   eyeFrameOptions?: { value: QREyeFrameShape; label: string }[]
   eyeCenterOptions?: { value: QREyeCenterShape; label: string }[]
-  pixelPatternOptions?: { value: import('../../../types/qr').QRPixelPattern; label: string }[]
+  pixelPatternOptions?: { value: import('@qrcraft/core').QRPixelPattern; label: string }[]
   // Foreground fill — solid color (fgColor) or a two-stop gradient
   fgGradient?: QRGradient | null
   onFgGradientChange?: (gradient: QRGradient | null) => void

@@ -1,4 +1,4 @@
-import type { SharePayload } from '../types/qr'
+import type { SharePayload } from '@qrcraft/core'
 
 const SHARE_FILENAME = 'qr-code.png'
 const MOBILE_USER_AGENT_PATTERN = /android|iphone|ipad|ipod|mobile/i

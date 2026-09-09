@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import type { WiFiConfig, WiFiSecurity } from '../types/qr'
-import { buildWifiString } from '../utils/wifi'
+import type { WiFiConfig, WiFiSecurity } from '@qrcraft/core'
+import { buildWifiString } from '@qrcraft/core'
 import { getHydratedSecrets } from '../utils/shareConfig'
 import { usePersistedConfig } from './usePersistedConfig'
 

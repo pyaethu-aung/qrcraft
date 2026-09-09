@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { buildCryptoString, CRYPTO_PAYLOAD_WARN, cryptoDraftLength, cryptoUnit, isValidAmount, isValidCryptoAddress } from '../crypto'
-import type { CryptoConfig } from '../../types/qr'
+import { buildCryptoString, CRYPTO_PAYLOAD_WARN, cryptoDraftLength, cryptoUnit, isValidAmount, isValidCryptoAddress } from './crypto'
+import type { CryptoConfig } from '../types/qr'
 
 // Well-formed sample addresses (not associated with any real wallet).
 const BTC_BECH32 = 'bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4'

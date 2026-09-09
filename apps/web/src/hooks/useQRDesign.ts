@@ -9,8 +9,8 @@ import type {
   QRFrameConfig,
   QRFrameStyle,
   QRFramePosition,
-} from '../types/qr'
-import { getMatrixSize } from '../utils/qrShapeRenderer'
+} from '@qrcraft/core'
+import { getMatrixSize } from '@qrcraft/core'
 import {
   DESIGN_STORAGE_KEY,
   FRAME_STORAGE_KEY,

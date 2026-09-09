@@ -21,6 +21,11 @@ export default defineConfig({
     exclude: [...configDefaults.exclude, 'e2e/**'],
     coverage: {
       reporter: ['text', 'lcov'],
+      // @qrcraft/core resolves through a symlinked node_modules entry, which
+      // bypasses V8 coverage's default node_modules exclusion (it sees the
+      // real packages/core path); exclude it explicitly so its compiled
+      // output isn't double-counted against apps/web's own coverage.
+      exclude: ['**/packages/core/**'],
     },
   },
 })

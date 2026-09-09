@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import type { SoftwareApplicationJSONLD } from '../../types/seo';
+import type { SoftwareApplicationJSONLD } from '@qrcraft/core';
 
 /**
  * SEOHead component handles document head metadata and JSON-LD structured data.

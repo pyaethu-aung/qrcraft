@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { downloadBlob } from '../utils/download'
-import { parseBatchInput, dedupeAndCap, BATCH_MAX_LINES } from '../utils/batch/parseBatchInput'
+import { parseBatchInput, dedupeAndCap, BATCH_MAX_LINES } from '@qrcraft/core'
 import { buildBatchZip, type BatchFormat, type BatchDesign } from '../utils/batch/buildBatchZip'
 import { buildLabelSheetPdf } from '../utils/batch/buildLabelSheetPdf'
 import {

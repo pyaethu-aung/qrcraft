@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { buildSmsString, SMS_PHONE_REGEX } from '../sms'
-import type { SmsConfig } from '../../types/qr'
+import { buildSmsString, SMS_PHONE_REGEX } from './sms'
+import type { SmsConfig } from '../types/qr'
 
 const base: SmsConfig = {
   number: '+15551234567',

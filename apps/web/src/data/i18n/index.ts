@@ -1,7 +1,7 @@
-import en from './en.json'
-import es from './es.json'
+import en from '@qrcraft/core/i18n/en.json'
+import es from '@qrcraft/core/i18n/es.json'
 
-import type { LocaleConfig, TranslationKey } from '../../types/i18n'
+import type { LocaleConfig, TranslationKey } from '@qrcraft/core'
 
 const localeRegistry = {
   en: en as LocaleConfig,

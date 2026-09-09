@@ -4,8 +4,8 @@ import { Callout } from '../../common/Callout'
 import { Textarea } from '../../common/Textarea'
 import { PhoneNumberField } from './PhoneNumberField'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import { buildSmsString, SMS_PHONE_REGEX } from '../../../utils/sms'
-import type { SmsConfig } from '../../../types/qr'
+import { buildSmsString, SMS_PHONE_REGEX } from '@qrcraft/core'
+import type { SmsConfig } from '@qrcraft/core'
 
 const SMS_PAYLOAD_WARN = 200
 

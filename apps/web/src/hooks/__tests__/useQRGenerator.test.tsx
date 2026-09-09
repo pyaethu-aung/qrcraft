@@ -2,9 +2,9 @@ import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { INPUT_LENGTH_LIMIT, useQRGenerator } from '../useQRGenerator'
 import * as downloadUtils from '../../utils/download'
-import * as qrShapeRenderer from '../../utils/qrShapeRenderer'
+import * as qrShapeRenderer from '@qrcraft/core'
 import * as svgExporter from '../../utils/export/svgExporter'
-import type { QRDesignConfig } from '../../types/qr'
+import type { QRDesignConfig } from '@qrcraft/core'
 
 const DEFAULT_DESIGN_CONFIG: QRDesignConfig = {
   eyeFrameShape: 'Square',
@@ -22,9 +22,17 @@ const MOCK_PATHS = {
   size: 21,
 }
 
+// @qrcraft/core ships as a built package, so its export namespace is frozen and
+// vi.spyOn can't redefine generateQRPaths on it directly (unlike same-app
+// relative imports); vi.mock swaps it for a mock fn up front instead.
+vi.mock('@qrcraft/core', async importOriginal => {
+  const actual = await importOriginal<typeof import('@qrcraft/core')>()
+  return { ...actual, generateQRPaths: vi.fn() }
+})
+
 vi.spyOn(downloadUtils, 'downloadBlob').mockImplementation(() => {})
 
-vi.spyOn(qrShapeRenderer, 'generateQRPaths').mockReturnValue(MOCK_PATHS)
+vi.mocked(qrShapeRenderer.generateQRPaths).mockReturnValue(MOCK_PATHS)
 
 vi.spyOn(svgExporter, 'exportSvg').mockResolvedValue(
   new Blob(['<svg/>'], { type: 'image/svg+xml' }),
@@ -54,7 +62,7 @@ describe('useQRGenerator', () => {
     vi.clearAllMocks()
     vi.useFakeTimers()
     vi.spyOn(downloadUtils, 'downloadBlob').mockImplementation(() => {})
-    vi.spyOn(qrShapeRenderer, 'generateQRPaths').mockReturnValue(MOCK_PATHS)
+    vi.mocked(qrShapeRenderer.generateQRPaths).mockReturnValue(MOCK_PATHS)
     vi.spyOn(svgExporter, 'exportSvg').mockResolvedValue(
       new Blob(['<svg/>'], { type: 'image/svg+xml' }),
     )
@@ -230,7 +238,7 @@ describe('useQRGenerator', () => {
   it('should handle PNG download errors gracefully', async () => {
     const { result } = renderHook(() => useQRGenerator())
 
-    vi.spyOn(qrShapeRenderer, 'generateQRPaths').mockImplementation(() => {
+    vi.mocked(qrShapeRenderer.generateQRPaths).mockImplementation(() => {
       throw new Error('Generation failed')
     })
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { PHONE_REGEX, normalizePhone, phoneFeedback } from '../phone'
+import { PHONE_REGEX, normalizePhone, phoneFeedback } from './phone'
 
 describe('normalizePhone', () => {
   it('returns null for empty or whitespace-only input', () => {

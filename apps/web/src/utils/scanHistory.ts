@@ -1,4 +1,4 @@
-import type { DecodedContentType } from './qrClassify'
+import type { DecodedContentType } from '@qrcraft/core'
 import { createLocalStorageList } from './localStorageList'
 
 /**

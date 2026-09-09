@@ -21,7 +21,7 @@ import type {
   VEventConfig,
   WiFiConfig,
   WiFiSecurity,
-} from '../types/qr'
+} from '@qrcraft/core'
 import { DEFAULT_QR_CONFIG } from '../data/defaults'
 
 /**

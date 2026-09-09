@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import en from '../../data/i18n/en.json'
+import en from '@qrcraft/core/i18n/en.json'
 import { applySeoMetadata } from '../metadata'
 
 describe('applySeoMetadata', () => {

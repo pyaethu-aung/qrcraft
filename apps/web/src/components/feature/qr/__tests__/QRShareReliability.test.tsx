@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { QRGenerator } from '../QRGenerator'
 import { useQRShare } from '../../../../hooks/useQRShare'
-import type { ShareRequest } from '../../../../types/qr'
+import type { ShareRequest } from '@qrcraft/core'
 
 // Internal mock state
 let _isSharing = false

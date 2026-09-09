@@ -1,7 +1,7 @@
 import { PhoneNumberField } from './PhoneNumberField'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import { TEL_PHONE_REGEX } from '../../../utils/tel'
-import type { TelConfig } from '../../../types/qr'
+import { TEL_PHONE_REGEX } from '@qrcraft/core'
+import type { TelConfig } from '@qrcraft/core'
 
 interface TelFormProps {
   config: TelConfig

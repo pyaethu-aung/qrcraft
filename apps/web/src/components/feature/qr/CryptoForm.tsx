@@ -3,8 +3,8 @@ import { Input } from '../../common/Input'
 import { Callout } from '../../common/Callout'
 import { PillGroup } from '../../common/PillGroup'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import { CRYPTO_PAYLOAD_WARN, cryptoDraftLength, cryptoUnit, isValidAmount, isValidCryptoAddress } from '../../../utils/crypto'
-import type { CryptoConfig } from '../../../types/qr'
+import { CRYPTO_PAYLOAD_WARN, cryptoDraftLength, cryptoUnit, isValidAmount, isValidCryptoAddress } from '@qrcraft/core'
+import type { CryptoConfig } from '@qrcraft/core'
 
 interface CryptoFormProps {
   config: CryptoConfig

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseBatchCsv, csvRowsToCommaText } from '../parseBatchCsv'
+import { parseBatchCsv, csvRowsToCommaText } from './parseBatchCsv'
 
 describe('parseBatchCsv', () => {
   it('splits headers from data rows', () => {

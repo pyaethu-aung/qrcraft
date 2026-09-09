@@ -10,7 +10,7 @@ import type {
   QRGradientDirection,
   QRFrameStyle,
   QRFramePosition,
-} from '../types/qr'
+} from '@qrcraft/core'
 import { readJSON, writeJSON, removeItem } from './safeLocalStorage'
 
 export interface PresetEntry {

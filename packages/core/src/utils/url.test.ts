@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isValidUrl } from '../url'
+import { isValidUrl } from './url'
 
 describe('isValidUrl', () => {
   it('accepts a bare domain', () => {

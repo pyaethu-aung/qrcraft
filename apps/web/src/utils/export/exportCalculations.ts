@@ -5,8 +5,8 @@
  * reusable across different export format implementations.
  */
 
-import type { DimensionPreset, DpiPreset, ExportFormat } from '../../types/export'
-import { FORMAT_CONFIGS } from '../../types/export'
+import type { DimensionPreset, DpiPreset, ExportFormat } from '@qrcraft/core'
+import { FORMAT_CONFIGS } from '@qrcraft/core'
 
 /**
  * Calculate canvas scale factor for target dimension.

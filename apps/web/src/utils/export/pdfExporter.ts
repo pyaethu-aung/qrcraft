@@ -12,7 +12,7 @@
 import { exportSvg } from './svgExporter'
 import { dpiToPageSize } from './exportCalculations'
 import type { SvgExportConfig } from './svgExporter'
-import type { DpiPreset } from '../../types/export'
+import type { DpiPreset } from '@qrcraft/core'
 
 export interface PdfExportConfig extends SvgExportConfig {
   dpi: DpiPreset

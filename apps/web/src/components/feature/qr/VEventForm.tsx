@@ -4,8 +4,8 @@ import { Input } from '../../common/Input'
 import { Textarea } from '../../common/Textarea'
 import { Callout } from '../../common/Callout'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import { isEndBeforeStart, veventDraftLength, VEVENT_PAYLOAD_WARN } from '../../../utils/vevent'
-import type { VEventConfig } from '../../../types/qr'
+import { isEndBeforeStart, veventDraftLength, VEVENT_PAYLOAD_WARN } from '@qrcraft/core'
+import type { VEventConfig } from '@qrcraft/core'
 
 interface VEventFormProps {
   config: VEventConfig

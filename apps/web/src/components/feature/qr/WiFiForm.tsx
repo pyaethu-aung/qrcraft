@@ -5,7 +5,7 @@ import { Callout } from '../../common/Callout'
 import { PillGroup } from '../../common/PillGroup'
 import { Tooltip } from '../../common/Tooltip'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import type { WiFiConfig, WiFiSecurity } from '../../../types/qr'
+import type { WiFiConfig, WiFiSecurity } from '@qrcraft/core'
 
 interface WiFiFormProps {
   config: WiFiConfig

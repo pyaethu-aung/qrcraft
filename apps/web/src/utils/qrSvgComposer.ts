@@ -5,10 +5,10 @@
  * geometry a caller needs to place a centered logo over the QR.
  */
 
-import type { QRDesignConfig, QRErrorCorrectionLevel, QRFrameConfig } from '../types/qr'
-import { generateQRPaths, getDataShapeRendering } from './qrShapeRenderer'
+import type { QRDesignConfig, QRErrorCorrectionLevel, QRFrameConfig } from '@qrcraft/core'
+import { generateQRPaths, getDataShapeRendering } from '@qrcraft/core'
 import { renderFrame } from './frameRenderer'
-import { buildFgGradientDefs } from './gradient'
+import { buildFgGradientDefs } from '@qrcraft/core'
 
 /** Element id for the foreground gradient. Each composed SVG is standalone, so a fixed id is safe. */
 const FG_GRADIENT_ID = 'qr-fg-gradient'

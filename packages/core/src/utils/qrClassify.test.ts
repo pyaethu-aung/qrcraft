@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { classifyDecoded, getOpenableUrl } from '../qrClassify'
+import { classifyDecoded, getOpenableUrl } from './qrClassify'
 
 describe('classifyDecoded', () => {
   it('treats empty or whitespace-only input as text', () => {
