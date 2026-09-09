@@ -1,1 +1,7 @@
-{}
+{
+  "enabledPlugins": {
+    "git-workflow@pyaethu-aung-skills": true,
+    "web-dev@pyaethu-aung-skills": true,
+    "react-native-dev@pyaethu-aung-skills": true
+  }
+}
