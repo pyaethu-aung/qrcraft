@@ -6,6 +6,10 @@ on:
     paths:
       - 'apps/web/src/**'
       - 'apps/web/tsconfig.*'
+      - 'packages/core/src/**'
+      - 'packages/core/tsconfig*.json'
+      - 'apps/mcp/src/**'
+      - 'apps/mcp/tsconfig.json'
       - 'package.json'
       - 'package-lock.json'
       - 'eslint.config.js'
@@ -41,9 +45,15 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint -- --cache
-      - name: Type Check
+      - name: Type Check (core)
+        working-directory: packages/core
+        run: npx tsc -p tsconfig.build.json
+      - name: Type Check (web)
         working-directory: apps/web
         run: npx tsc -b
+      - name: Type Check (mcp)
+        working-directory: apps/mcp
+        run: npx tsc
       - name: Test
         run: npm run test:coverage
       - name: Build Verification

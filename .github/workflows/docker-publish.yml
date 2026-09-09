@@ -25,6 +25,8 @@ on:
       - 'apps/web/tsconfig.*'
       - 'apps/web/tailwind.config.js'
       - 'apps/web/postcss.config.cjs'
+      - 'packages/core/src/**'
+      - 'packages/core/tsconfig*.json'
       - 'package.json'
       - 'package-lock.json'
       - '.nvmrc'
