@@ -10,6 +10,7 @@ on:
       - 'apps/web/e2e/**'
       - 'apps/web/playwright.config.ts'
       - 'apps/web/vite.config.ts'
+      - 'packages/core/src/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/e2e.yml'
