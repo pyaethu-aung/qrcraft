@@ -242,9 +242,8 @@ The app supports multiple languages (English and Spanish) via custom locale conf
 
 End-to-end / visual tests live in `e2e/` and drive the running app in a real
 browser, capturing a full-page screenshot and a video per run across desktop
-and mobile, light and dark. `/impeccable critique` (and the
-`develop-web-feature` skill that drives it) use the same setup. Contributor
-guide: [`e2e/README.md`](e2e/README.md).
+and mobile, light and dark. `/impeccable critique` uses the same setup.
+Contributor guide: [`e2e/README.md`](e2e/README.md).
 
 ```bash
 npm run test:e2e                              # all projects (desktop/mobile x light/dark)
@@ -267,37 +266,20 @@ artifacts, so the screenshots and recording are reachable from the PR's checks.
 These tests are separate from the Vitest unit suite (`npm run test`); `e2e/` is
 excluded from Vitest in `vite.config.ts` so the two runners do not collide.
 
-## Spec-Kit
+## AI skills
 
-This project uses [spec-kit](https://github.com/github/spec-kit) v0.8.4 for
-AI-assisted development workflows — including structured planning, feature
-scaffolding, and commit/PR automation via skills in `.claude/skills/` and
-`.agents/skills/`.
-
-| Skill | When to use |
-|---|---|
-| `/commit-message` | Creating or amending any git commit |
-| `/create-pr` | Opening a GitHub pull request |
-| `/update-readme` | After any user-facing change worth documenting |
+The only skill installed is [`/impeccable`](https://github.com/pbakaus/impeccable),
+for designing and auditing the interface. `commit-message`, `create-pr`,
+`update-readme`, `develop-web-feature` and the `speckit-*` set were removed,
+along with the two `PreToolUse` hooks that forced commits and PRs through the
+first two. The commit conventions in `CLAUDE.md` still apply; they are simply
+no longer mechanically enforced.
 
 ### Hands-off permissions
 
 > **Workspace trust required.** If you see `Ignoring N permissions.allow entries … this workspace has not been trusted`, the allow list is inactive and every command will prompt. Fix it one of two ways:
 > - Run `claude` interactively in this repo once and accept the trust dialog.
 > - Or set `projects["/absolute/path/to/qr-generator"].hasTrustDialogAccepted: true` in your personal Claude config (`~/.claude.json`).
-
-`/develop-web-feature` self-configures its required allow entries. Add one bootstrap entry to `.claude/settings.local.json` manually, then run the setup script:
-
-```json
-"Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)"
-```
-
-```bash
-node .claude/skills/develop-web-feature/scripts/setup.mjs           # preview (dry run)
-node .claude/skills/develop-web-feature/scripts/setup.mjs --write   # apply
-```
-
-The script **defaults to a dry run** (writes nothing; re-run with `--write` to apply) and is idempotent. It adds the gate runner, the dev-server helper, the other helper scripts, the grants derived from `package.json`, and `Skill(commit-message)` / `Skill(create-pr)` (singular; the plural `Skills(...)` never matches) if installed. For an unattended run that should not stop on per-edit permission prompts, add `--grant-edits` to also auto-approve `Edit` / `Write` / `MultiEdit`, scoped to the project's source and test directories.
 
 The `/impeccable` skill requires one separate manual entry:
 
