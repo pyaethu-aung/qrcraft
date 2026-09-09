@@ -1,8 +1,8 @@
 ---
 slug: monorepo-consolidation
 title: Monorepo for qrcraft, qrcraft-core and qr-mcp
-status: proposed
-branch: docs/monorepo-and-mobile-specs
+status: building
+branch: refactor/monorepo-consolidation
 created: 2026-09-09
 ---
 
