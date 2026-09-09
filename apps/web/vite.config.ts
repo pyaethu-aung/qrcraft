@@ -6,6 +6,15 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   base: './',
   plugins: [react(), tailwindcss()],
+  optimizeDeps: {
+    // Vite excludes linked workspace packages from dependency pre-bundling by
+    // default, serving them live via /@fs instead — but @qrcraft/core builds
+    // to CommonJS, and Vite's live CJS interop for that path doesn't reliably
+    // detect every named export of a large `export *` barrel (unlike the
+    // esbuild-based dep-optimizer, which handles this correctly). Forcing it
+    // through the optimizer fixes named imports breaking in dev.
+    include: ['@qrcraft/core'],
+  },
   build: {
     // The only bundle over Vite's 500 kB default is the on-demand HEIC codec
     // (`heic-to` base64-inlines libheif's ~3 MB WASM). It is dynamically imported
