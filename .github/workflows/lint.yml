@@ -43,11 +43,14 @@ jobs:
             eslint-${{ runner.os }}-
       - name: Install dependencies
         run: npm ci
+      - name: Build core
+        # apps/web and apps/mcp resolve "@qrcraft/core" via workspace
+        # resolution to packages/core/dist, so type-aware lint of either
+        # (and their own tsc type-checks, below) fails to resolve the
+        # module without this running first.
+        run: npm run build --workspace=packages/core
       - name: Lint
         run: npm run lint -- --cache
-      - name: Type Check (core)
-        working-directory: packages/core
-        run: npx tsc -p tsconfig.build.json
       - name: Type Check (web)
         working-directory: apps/web
         run: npx tsc -b

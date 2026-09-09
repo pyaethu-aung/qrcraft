@@ -21,12 +21,19 @@ WORKDIR /app
 # Copy workspace manifests first for layer cache optimization (FR-016)
 # Only re-runs npm ci when package files change, not on every source edit.
 # npm workspaces needs every member's package.json present to compute the
-# install even though only apps/web is built here.
+# install even though only apps/web and packages/core are built here.
 COPY package.json package-lock.json ./
 COPY apps/web/package.json apps/web/package.json
+COPY packages/core/package.json packages/core/package.json
 
 # Use npm ci for reproducible, clean installs (mirrors CI behavior)
 RUN npm ci --ignore-scripts
+
+# packages/core: apps/web depends on it as a workspace package ("@qrcraft/core": "*"),
+# resolved via node_modules symlink to packages/core/dist — build it before apps/web.
+COPY packages/core/tsconfig.json packages/core/tsconfig.build.json packages/core/
+COPY packages/core/src/ packages/core/src/
+RUN npm run build --workspace=packages/core
 
 # Copy configuration files needed by the build pipeline
 COPY apps/web/tsconfig.json apps/web/tsconfig.app.json apps/web/tsconfig.node.json apps/web/
