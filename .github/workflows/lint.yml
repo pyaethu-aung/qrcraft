@@ -4,11 +4,11 @@ on:
   pull_request:
     branches: ["main"]
     paths:
-      - 'src/**'
+      - 'apps/web/src/**'
+      - 'apps/web/tsconfig.*'
       - 'package.json'
       - 'package-lock.json'
       - 'eslint.config.js'
-      - 'tsconfig.*'
       - '.github/workflows/lint.yml'
 
 concurrency:
@@ -42,7 +42,8 @@ jobs:
       - name: Lint
         run: npm run lint -- --cache
       - name: Type Check
-        run: npm exec tsc -- --noEmit
+        working-directory: apps/web
+        run: npx tsc -b
       - name: Test
         run: npm run test:coverage
       - name: Build Verification
