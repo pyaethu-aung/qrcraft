@@ -107,8 +107,14 @@ old vendored `.agents/` tree with `skills-lock.json`, both of which are gone.
 | `impeccable` plugin | `/impeccable`, plus a vendored copy at `.claude/skills/impeccable/` and four subagents in `.claude/agents/` |
 | `git-workflow` plugin | `/git-workflow:commit-message`, `/git-workflow:create-pr`, and the `PreToolUse` guards that enforce them |
 | `web-dev` plugin | `/web-dev:develop-web-feature`, `/web-dev:update-readme` |
+| `react-native-dev` plugin | `/react-native-dev:develop-react-native-feature`, `/react-native-dev:update-readme` |
 
 The `speckit-*` set was removed outright and is not coming back.
+
+The last three are enabled for everyone: `.claude/settings.json` commits an
+`enabledPlugins` block naming them, so a fresh clone gets the same set without
+anyone running `/plugin` by hand. `impeccable` is not in that block — `/impeccable`
+resolves from the committed `.claude/skills/impeccable/` copy described below.
 
 **Committing goes through the skill.** The git-workflow plugin restores a
 `PreToolUse` guard on `git commit` and `gh pr create`; a commit is allowed only
@@ -125,8 +131,9 @@ one into `~/.impeccable/` on first run.
 
 Auto-approve grants are **personal, not shared**: they live in the gitignored
 `.claude/settings.local.json`, where Claude Code also writes "always allow"
-approvals. The committed `.claude/settings.json` should stay empty and must never
-hold per-developer grants. Note that `settings.local.json` may still contain stale
+approvals. The committed `.claude/settings.json` holds only repo-wide tooling
+config — currently the `enabledPlugins` block above — and must never hold
+per-developer grants. Note that `settings.local.json` may still contain stale
 entries pointing at the removed skill scripts; they are inert.
 
 > **Workspace trust required.** If you see `Ignoring N permissions.allow entries from .claude/settings.local.json: this workspace has not been trusted`, the allow list is silently inactive. Fix it one of two ways:

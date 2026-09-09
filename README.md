@@ -270,8 +270,10 @@ excluded from Vitest in `vite.config.ts` so the two runners do not collide.
 
 Installed as Claude Code plugins (`/plugin`), not as a vendored `.agents/` tree:
 [impeccable](https://github.com/pbakaus/impeccable) for design work, plus
-`git-workflow` (commit and PR skills, with hooks that enforce them) and `web-dev`.
-The `speckit-*` set was removed.
+`git-workflow` (commit and PR skills, with hooks that enforce them), `web-dev` and
+`react-native-dev`. The last three are listed in the committed
+`.claude/settings.json`, so a clone enables them automatically. The `speckit-*` set
+was removed.
 
 `impeccable` keeps a copy at `.claude/skills/impeccable/`, which is committed; its
 platform engine binary is gitignored and downloaded on first run.
@@ -282,8 +284,9 @@ platform engine binary is gitignored and downloaded on first run.
 > - Run `claude` interactively in this repo once and accept the trust dialog.
 > - Or set `projects["/absolute/path/to/qr-generator"].hasTrustDialogAccepted: true` in your personal Claude config (`~/.claude.json`).
 
-Grants live in the gitignored `.claude/settings.local.json`; the committed
-`.claude/settings.json` is empty and should stay that way.
+Grants live in the gitignored `.claude/settings.local.json`. The committed
+`.claude/settings.json` carries only repo-wide tooling config (the enabled plugin
+set) and must never hold per-developer grants.
 
 ## Docker Support
 
