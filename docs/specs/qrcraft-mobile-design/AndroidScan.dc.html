@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; -webkit-font-smoothing: antialiased; }
+    a { color: #A04D28; text-decoration: none; } a:hover { color: #8B4020; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+<div style="position: relative; width: 412px; height: 915px; overflow: hidden; font-family: 'Roboto Flex', Roboto, system-ui, sans-serif; background: #141110; color: #EDE0DA">
+  <div style="position: absolute; inset: 0; background: radial-gradient(120% 72% at 50% 38%, #2B2320 0%, #141110 76%)"></div>
+
+  <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px">
+    <div style="position: relative; width: 260px; height: 260px">
+      <svg width="260" height="260" viewBox="0 0 260 260" fill="none" stroke="#FFB68F" stroke-width="4" stroke-linecap="round">
+        <path d="M5 70V29a24 24 0 0 1 24-24h41"/><path d="M190 5h41a24 24 0 0 1 24 24v41"/>
+        <path d="M255 190v41a24 24 0 0 1-24 24h-41"/><path d="M70 255H29a24 24 0 0 1-24-24v-41"/>
+      </svg>
+      <div style="position: absolute; left: 26px; right: 26px; top: 126px; height: 2px;
+                  background: linear-gradient(90deg, rgba(255,182,143,0) 0%, #FFB68F 50%, rgba(255,182,143,0) 100%)"></div>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+      <span style="font-size: 22px; font-weight: 400; color: #EDE0DA">Point at a QR code</span>
+      <span style="font-size: 14px; color: #D0C3BD">Read on your device, never uploaded</span>
+    </div>
+    <div style="display: flex; gap: 12px">
+      <div style="height: 40px; padding: 0 16px; border-radius: 20px; border: 1px solid #9C8D86; display: flex; align-items: center; gap: 8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFB68F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3L5 14h5l-1 7 8-11h-5l1-7z"/></svg><span style="font-size: 14px; font-weight: 600; color: #FFB68F; letter-spacing: 0.1px">Torch</span></div>
+      <div style="height: 40px; padding: 0 16px; border-radius: 20px; background: #5A4034; display: flex; align-items: center; gap: 8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFDBCB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="M5 17l4.5-4.5L14 17"/></svg><span style="font-size: 14px; font-weight: 600; color: #FFDBCB; letter-spacing: 0.1px">Photos</span></div>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 0; right: 0; top: 0; height: 64px; display: flex; align-items: center; padding: 0 16px">
+    <span style="font-size: 22px; font-weight: 400; color: #EDE0DA">Scan</span>
+  </div>
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 80px; background: #241E1A; display: flex; padding-bottom: 8px"><div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 12px">
+        <div style="width: 64px; height: 32px; border-radius: 16px;  display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D0C3BD" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v6H4z"/><path d="M14 4h6v6h-6z"/><path d="M4 14h6v6H4z"/><path d="M14 14h2v2h-2z"/><path d="M18 18h2v2h-2z"/></svg></div>
+        <span style="font-size: 12px; font-weight: 500; color: #D0C3BD; letter-spacing: 0.5px">Generate</span></div><div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 12px">
+        <div style="width: 64px; height: 32px; border-radius: 16px; background: #5A4034; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFDBCB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M20 16v2a2 2 0 0 1-2 2h-2"/><path d="M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M4 12h16"/></svg></div>
+        <span style="font-size: 12px; font-weight: 600; color: #FFDBCB; letter-spacing: 0.5px">Scan</span></div><div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 12px">
+        <div style="width: 64px; height: 32px; border-radius: 16px;  display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D0C3BD" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/></svg></div>
+        <span style="font-size: 12px; font-weight: 500; color: #D0C3BD; letter-spacing: 0.5px">Saved</span></div></div>
+</div>
+</x-dc>
+</body>
+</html>
