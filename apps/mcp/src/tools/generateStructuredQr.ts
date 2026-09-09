@@ -9,16 +9,7 @@ import {
   buildVEventString,
   buildCryptoString,
 } from '@qrcraft/core'
-import { renderQr, CapacityExceededError } from '../render.js'
-
-const appearanceSchema = {
-  ecLevel: z.enum(['L', 'M', 'Q', 'H']).default('M'),
-  format: z.enum(['png', 'svg']).default('png'),
-  size: z.number().int().min(64).max(2048).default(512),
-  margin: z.number().int().min(0).max(20).default(4),
-  dark: z.string().default('#000000'),
-  light: z.string().default('#ffffff'),
-}
+import { appearanceSchema, renderQrToolResult } from '../render.js'
 
 const payloadSchema = z.discriminatedUnion('type', [
   z.object({
@@ -83,15 +74,9 @@ export const generateStructuredQrInputSchema = {
 
 export type StructuredPayload = z.infer<typeof payloadSchema>
 
-export interface GenerateStructuredQrInput {
-  payload: StructuredPayload
-  ecLevel: 'L' | 'M' | 'Q' | 'H'
-  format: 'png' | 'svg'
-  size: number
-  margin: number
-  dark: string
-  light: string
-}
+export type GenerateStructuredQrInput = z.infer<
+  ReturnType<typeof z.object<typeof generateStructuredQrInputSchema>>
+>
 
 function buildPayloadString(payload: StructuredPayload): string {
   switch (payload.type) {
@@ -125,18 +110,5 @@ export async function handleGenerateStructuredQr(input: GenerateStructuredQrInpu
     }
   }
 
-  try {
-    const result = await renderQr(content, input)
-    if ('svg' in result) {
-      return { content: [{ type: 'text' as const, text: result.svg }] }
-    }
-    return {
-      content: [{ type: 'image' as const, data: result.png.toString('base64'), mimeType: 'image/png' }],
-    }
-  } catch (error) {
-    if (error instanceof CapacityExceededError) {
-      return { content: [{ type: 'text' as const, text: error.message }], isError: true }
-    }
-    throw error
-  }
+  return renderQrToolResult(content, input)
 }
