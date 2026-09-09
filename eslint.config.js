@@ -50,12 +50,20 @@ export default defineConfig([
           './apps/web/tsconfig.app.json',
           './apps/web/tsconfig.node.json',
           './packages/core/tsconfig.json',
+          './apps/mcp/tsconfig.json',
         ],
         tsconfigRootDir: import.meta.dirname,
       },
     },
     rules: {
       'react-refresh/only-export-components': 'off',
+    },
+  },
+  {
+    // apps/mcp is a Node process (stdio/HTTP transports), not a browser context.
+    files: ['apps/mcp/**/*.ts'],
+    languageOptions: {
+      globals: globals.node,
     },
   },
   {
