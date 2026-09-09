@@ -99,24 +99,25 @@ If a task touches more than two categories, stage and commit one at a time.
 
 ## Skills
 
-Skills are stored under `.agents/skills/` (source files) with symlinks from `.claude/skills/`. Active skills are tracked in `skills-lock.json` (sourced from `pyaethu-aung/skills` on GitHub).
+Skills are stored under `.agents/skills/` (source files) with symlinks from `.claude/skills/`. Active skills are tracked in `skills-lock.json`.
 
 | Skill | When to use |
 |---|---|
-| `/commit-message` | Creating or amending any git commit |
-| `/create-pr` | Opening a GitHub pull request |
-| `/update-readme` | After any user-facing change worth documenting |
-| `/develop-web-feature` | Building a new feature end-to-end (shape → build → audit → PR) |
+| `/impeccable` | Designing, auditing, or refining any frontend interface |
 
-Two `PreToolUse` hooks in `.claude/settings.json` enforce that `git commit` and `gh pr create` go through the relevant skills. Do not bypass them with `--no-verify`.
+`commit-message`, `create-pr`, `update-readme`, `develop-web-feature` and the
+`speckit-*` set were removed. The two `PreToolUse` hooks that forced `git commit`
+and `gh pr create` through the first two went with them, since a guard demanding a
+skill that no longer exists would block committing outright. `.claude/settings.json`
+is now empty; the commit conventions above still apply, they are simply no longer
+mechanically enforced.
 
 ### Permissions (hands-off / autonomous mode)
 
 Auto-approve grants are **personal, not shared**: they live in the gitignored
-`.claude/settings.local.json` (where Claude Code also writes "always allow"
-approvals), so each developer opts in by running the setup script in their own
-checkout. The committed `.claude/settings.json` holds only the enforcement
-hooks — project policy everyone shares, never per-developer grants.
+`.claude/settings.local.json`, where Claude Code also writes "always allow"
+approvals. The committed `.claude/settings.json` is empty now that the
+enforcement hooks are gone, and it should never hold per-developer grants.
 
 > **Workspace trust required.** If you see `Ignoring N permissions.allow entries from .claude/settings.local.json: this workspace has not been trusted`, the allow list is silently inactive. Fix it one of two ways:
 > - Run `claude` interactively in this directory once and accept the trust dialog that appears.
@@ -128,21 +129,6 @@ hooks — project policy everyone shares, never per-developer grants.
 >     }
 >   }
 >   ```
-
-`/develop-web-feature` self-configures its required allow entries (into `.claude/settings.local.json`) via a setup script. The only entry you need to add manually (once) is the bootstrap entry for the setup script itself — add it to `.claude/settings.local.json`:
-
-```json
-"Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)"
-```
-
-Then run it from the project root. It **defaults to a dry run** (it prints the grants it would add and writes nothing); re-run with `--write` to apply:
-
-```bash
-node .claude/skills/develop-web-feature/scripts/setup.mjs           # preview the delta
-node .claude/skills/develop-web-feature/scripts/setup.mjs --write   # apply it
-```
-
-This adds the gate runner, the dev-server helper, the skill's other helper scripts, the test/lint/type grants it derives from `package.json`, and the skill-invocation tokens `Skill(commit-message)` / `Skill(create-pr)` (singular; the plural `Skills(...)` never matches) if those skills are installed. It is idempotent, safe to re-run any time. For an unattended run that should not stop on per-edit permission prompts, add `--grant-edits` to also auto-approve `Edit` / `Write` / `MultiEdit`, scoped to the project's source and test directories (config, `package.json`, `.github/`, `.claude/`, and docs still prompt).
 
 The `/impeccable` skill has one separate entry that must be added manually (also to `.claude/settings.local.json`):
 
