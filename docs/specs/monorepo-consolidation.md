@@ -1,7 +1,7 @@
 ---
 slug: monorepo-consolidation
 title: Monorepo for qrcraft, qrcraft-core and qr-mcp
-status: building
+status: shipped
 branch: refactor/monorepo-consolidation
 created: 2026-09-09
 ---
@@ -235,4 +235,77 @@ ships alone.
 
 ## Changes from plan
 
-<!-- Filled when this ships: what diverged from the above. -->
+**Module list deviations (both load-bearing, not oversights):**
+- `presets.ts` stays in `apps/web`, not `packages/core`. It reads/writes
+  `localStorage` via `safeLocalStorage`, which directly contradicts FR-003's
+  storage ban — and the spec's own "not in core" list already excludes
+  `safeLocalStorage`, so `presets.ts` moving was inconsistent with that on
+  inspection.
+- `utif.d.ts` stays in `apps/web/src/types/`, not `packages/core`, despite
+  "everything in src/types/" — it's an ambient type shim for the `utif`
+  package, used only by `apps/web`'s HEIC/TIFF decoding; core has no
+  dependency on `utif` and it isn't business logic.
+- `types/index.ts` (`QRConfig`, `ValidationResult`) moved to core per the
+  letter of "everything in src/types/", but is not re-exported through the
+  core barrel: it's legacy dead code, unused anywhere, and collides on the
+  name `QRConfig` with `types/qr.ts`'s actual, in-use `QRConfig`.
+- A transitive dependency the spec's table didn't list: `country.ts` (listed)
+  imports `data/countries.ts` (not listed), which moved with it.
+
+**i18n:** the spec says only `en.json`/`es.json` copy into core. Doing that
+alone left two independent locale registries (a hardcoded list in core, a
+separately-built registry in `apps/web`) — exactly the two-sources-of-truth
+problem the extraction should avoid. Fixed during the `/simplify` pass:
+`packages/core/src/i18n/locales.ts` now builds the actual registry and is
+the thing `apps/web/src/data/i18n/index.ts` imports and builds its
+flatten/`getCopy` logic on top of, not a second re-derivation.
+
+**Vite dev-server bug, not anticipated by the spec:** the full e2e suite
+failed across every project once actually run against `npm run dev` (the
+one verification step nothing before it had done — unit tests, lint, and
+`vite build` all passed, but nobody had loaded the dev server in a real
+browser until the Phase 5 "final testing" pass). Root cause: Vite excludes
+linked workspace packages from dependency pre-bundling by default, and its
+live CJS interop for `@qrcraft/core` (built to CommonJS) doesn't reliably
+resolve every named export of its `export *` barrel. Fixed with
+`optimizeDeps.include: ['@qrcraft/core']` in `apps/web/vite.config.ts`.
+
+**Coverage, FR-004:** `packages/core` holds 97%/93%/96%/98%
+(stmts/branches/funcs/lines) — just under the 95% branch target, a
+pre-existing gap in a few moved modules' edge cases (vevent, crypto,
+csvContentTypes), not something the move introduced. Threshold enforced at
+90% for branches accordingly. `apps/web`'s line coverage (87%) still clears
+its 85% floor, but statements (83%) and functions (78%) dropped below it:
+removing ~2,000 lines of well-tested pure logic shrank the denominator's
+best-covered slice, leaving the UI-glue layer (always the less-tested part)
+as a larger share of what remains. Both gaps are follow-up test-writing,
+not something this migration blocks on.
+
+**Risk table follow-up:**
+- *Pages deploy breaks silently* — the artifact path (`apps/web/dist`) and
+  build steps were verified locally (`npm run build` produces it correctly),
+  but the actual live Pages deploy could not be verified from this branch:
+  `deploy.yml` triggers only on a published GitHub release or
+  `workflow_dispatch`, neither of which happens from a feature branch.
+  **Verify the site loads after this merges and the next release
+  publishes** — this is still the one step where CI passing doesn't mean
+  the site works.
+- *Required checks stuck on skipped path-filtered jobs* — moot for now:
+  `gh api repos/.../branches/main/protection` 404s, so `main` has no
+  branch protection and no required status check exists to get stuck.
+  Revisit the always-green-companion-job pattern if that changes.
+- *`.nvmrc` says 20 while local Node is 25* — left unaddressed; unrelated to
+  this migration and not touched, per the original risk note.
+- The other risks (Docker build context, Dependabot, step 2 being
+  unreviewable line by line) played out as anticipated — rename detection
+  worked cleanly, the Docker context change is covered by
+  `docker-publish`'s pull_request trigger, and Dependabot's single root
+  manifest needs no separate change.
+
+**MCP server scope:** built as specified (both tools, both transports),
+smoke-tested end-to-end over stdio and HTTP with a throwaway JSON-RPC
+client rather than a committed automated test — the project has no
+existing test setup for a Node-side app to follow, and adding one was out
+of scope for this migration. `QR_MCP_PLAN.md` is deleted (its copy-the-files
+approach is superseded); a backup lives outside git in this session's cache
+in case anything in it is still worth mining later.
