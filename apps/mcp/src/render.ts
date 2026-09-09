@@ -1,14 +1,19 @@
+import { z } from 'zod'
 import QRCode from 'qrcode'
-import { getCapacityStatus, type QRErrorCorrectionLevel } from '@qrcraft/core'
+import { getCapacityStatus } from '@qrcraft/core'
 
-export interface RenderOptions {
-  ecLevel: QRErrorCorrectionLevel
-  format: 'png' | 'svg'
-  size: number
-  margin: number
-  dark: string
-  light: string
+// Shared by both tools' input schemas (generateQr.ts, generateStructuredQr.ts)
+// so appearance options are defined once.
+export const appearanceSchema = {
+  ecLevel: z.enum(['L', 'M', 'Q', 'H']).default('M').describe('Error-correction level'),
+  format: z.enum(['png', 'svg']).default('png'),
+  size: z.number().int().min(64).max(2048).default(512).describe('Output size in pixels (PNG only)'),
+  margin: z.number().int().min(0).max(20).default(4).describe('Quiet-zone width, in modules'),
+  dark: z.string().default('#000000').describe('Foreground color, hex'),
+  light: z.string().default('#ffffff').describe('Background color, hex'),
 }
+
+export type RenderOptions = z.infer<ReturnType<typeof z.object<typeof appearanceSchema>>>
 
 export class CapacityExceededError extends Error {
   readonly used: number
@@ -47,4 +52,22 @@ export async function renderQr(
 
   const png = await QRCode.toBuffer(content, { ...qrOptions, type: 'png' })
   return { png }
+}
+
+/** Shared by both tool handlers: render, then shape the result as MCP tool content. */
+export async function renderQrToolResult(content: string, options: RenderOptions) {
+  try {
+    const result = await renderQr(content, options)
+    if ('svg' in result) {
+      return { content: [{ type: 'text' as const, text: result.svg }] }
+    }
+    return {
+      content: [{ type: 'image' as const, data: result.png.toString('base64'), mimeType: 'image/png' }],
+    }
+  } catch (error) {
+    if (error instanceof CapacityExceededError) {
+      return { content: [{ type: 'text' as const, text: error.message }], isError: true }
+    }
+    throw error
+  }
 }
