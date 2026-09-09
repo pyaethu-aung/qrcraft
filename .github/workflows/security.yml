@@ -4,14 +4,14 @@ on:
   push:
     branches: ["main"]
     paths:
-      - 'src/**'
+      - 'apps/web/src/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/security.yml'
   pull_request:
     branches: ["main"]
     paths:
-      - 'src/**'
+      - 'apps/web/src/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/security.yml'

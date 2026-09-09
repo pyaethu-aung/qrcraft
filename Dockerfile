@@ -18,25 +18,28 @@ FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy dependency manifests first for layer cache optimization (FR-016)
-# Only re-runs npm ci when package files change, not on every source edit
+# Copy workspace manifests first for layer cache optimization (FR-016)
+# Only re-runs npm ci when package files change, not on every source edit.
+# npm workspaces needs every member's package.json present to compute the
+# install even though only apps/web is built here.
 COPY package.json package-lock.json ./
+COPY apps/web/package.json apps/web/package.json
 
 # Use npm ci for reproducible, clean installs (mirrors CI behavior)
 RUN npm ci --ignore-scripts
 
 # Copy configuration files needed by the build pipeline
-COPY tsconfig.json tsconfig.app.json tsconfig.node.json ./
-COPY vite.config.ts ./
-COPY postcss.config.cjs tailwind.config.js ./
-COPY index.html ./
+COPY apps/web/tsconfig.json apps/web/tsconfig.app.json apps/web/tsconfig.node.json apps/web/
+COPY apps/web/vite.config.ts apps/web/
+COPY apps/web/postcss.config.cjs apps/web/tailwind.config.js apps/web/
+COPY apps/web/index.html apps/web/
 
 # Copy source code and public assets (changes here don't invalidate npm ci cache)
-COPY src/ src/
-COPY public/ public/
+COPY apps/web/src/ apps/web/src/
+COPY apps/web/public/ apps/web/public/
 
 # Compile TypeScript and build production bundle
-RUN npm run build
+RUN npm run build --workspace=apps/web
 
 # ---------------------------------------------------------------------------
 # Stage 2: Runtime — serve static assets with hardened Nginx
@@ -58,7 +61,7 @@ RUN addgroup -g 1000 -S app && \
 RUN rm -rf /usr/share/nginx/html/* /etc/nginx/conf.d/default.conf
 
 # Copy built static assets from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
 
 # Copy custom Nginx configuration
 COPY .docker/nginx.conf /etc/nginx/nginx.conf
