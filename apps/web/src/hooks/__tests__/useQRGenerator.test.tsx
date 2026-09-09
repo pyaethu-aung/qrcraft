@@ -30,14 +30,6 @@ vi.mock('@qrcraft/core', async importOriginal => {
   return { ...actual, generateQRPaths: vi.fn() }
 })
 
-vi.spyOn(downloadUtils, 'downloadBlob').mockImplementation(() => {})
-
-vi.mocked(qrShapeRenderer.generateQRPaths).mockReturnValue(MOCK_PATHS)
-
-vi.spyOn(svgExporter, 'exportSvg').mockResolvedValue(
-  new Blob(['<svg/>'], { type: 'image/svg+xml' }),
-)
-
 // Stub canvas and Image so the PNG render path completes in jsdom
 const fakeBlob = new Blob(['fake-png'], { type: 'image/png' })
 HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({

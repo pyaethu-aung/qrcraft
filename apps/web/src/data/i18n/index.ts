@@ -1,9 +1,15 @@
-import { localeRegistry, type LocaleRegistry, type SupportedLocale, type TranslationKey } from '@qrcraft/core'
+import {
+  localeRegistry,
+  SUPPORTED_LOCALES,
+  type LocaleRegistry,
+  type SupportedLocale,
+  type TranslationKey,
+} from '@qrcraft/core'
 
 export const locales = localeRegistry
 export type { LocaleRegistry, SupportedLocale }
 export const defaultLocale: SupportedLocale = 'en'
-export const localeCodes = Object.keys(localeRegistry) as SupportedLocale[]
+export const localeCodes = SUPPORTED_LOCALES
 
 const missingTranslationLog = new Set<string>()
 
