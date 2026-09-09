@@ -97,27 +97,32 @@ One logical change per commit. Each of the following is its own commit boundary 
 
 If a task touches more than two categories, stage and commit one at a time.
 
-## Skills
+## Agent tooling
 
-Skills are stored under `.agents/skills/` (source files) with symlinks from `.claude/skills/`. Active skills are tracked in `skills-lock.json`.
+No skills are installed in the repository. `commit-message`, `create-pr`,
+`update-readme`, `develop-web-feature`, the `speckit-*` set and `impeccable` were
+all removed, along with `.agents/`, `.claude/skills/`, `.github/skills/`,
+`.impeccable/`, the impeccable subagent definitions in `.claude/agents/`, and
+`skills-lock.json`.
 
-| Skill | When to use |
-|---|---|
-| `/impeccable` | Designing, auditing, or refining any frontend interface |
+The two `PreToolUse` hooks went with them. They forced `git commit` and
+`gh pr create` through `commit-message` and `create-pr`, so leaving them would have
+demanded skills that no longer exist and blocked committing outright.
+`.claude/settings.json` is now empty. The commit discipline documented above still
+stands; it is simply no longer mechanically enforced.
 
-`commit-message`, `create-pr`, `update-readme`, `develop-web-feature` and the
-`speckit-*` set were removed. The two `PreToolUse` hooks that forced `git commit`
-and `gh pr create` through the first two went with them, since a guard demanding a
-skill that no longer exists would block committing outright. `.claude/settings.json`
-is now empty; the commit conventions above still apply, they are simply no longer
-mechanically enforced.
+`impeccable` is expected back as a **Claude Code plugin** rather than a vendored
+copy. A plugin installs outside the repository, so it needs no `.agents/` tree, no
+`skills-lock.json` entry, and no committed permission grants. Install it with
+`/plugin`.
 
-### Permissions (hands-off / autonomous mode)
+### Permissions
 
 Auto-approve grants are **personal, not shared**: they live in the gitignored
 `.claude/settings.local.json`, where Claude Code also writes "always allow"
-approvals. The committed `.claude/settings.json` is empty now that the
-enforcement hooks are gone, and it should never hold per-developer grants.
+approvals. The committed `.claude/settings.json` should stay empty and must never
+hold per-developer grants. Note that `settings.local.json` may still contain stale
+entries pointing at the removed skill scripts; they are inert.
 
 > **Workspace trust required.** If you see `Ignoring N permissions.allow entries from .claude/settings.local.json: this workspace has not been trusted`, the allow list is silently inactive. Fix it one of two ways:
 > - Run `claude` interactively in this directory once and accept the trust dialog that appears.
@@ -129,21 +134,6 @@ enforcement hooks are gone, and it should never hold per-developer grants.
 >     }
 >   }
 >   ```
-
-The `/impeccable` skill has one separate entry that must be added manually (also to `.claude/settings.local.json`):
-
-| Permission | Why |
-|---|---|
-| `Bash(.claude/skills/impeccable/scripts/impeccable *)` | Every `/impeccable` sub-command shells out to this launcher, which runs a self-contained engine binary (no Node required). |
-
-The launcher expects its platform binary at `scripts/bin/<os>-<arch>/impeccable`. That
-path is **gitignored** — it is ~12 MB and architecture-specific — so a fresh clone has
-no binary and the launcher downloads one on first run into `~/.impeccable/`. Nothing to
-do manually.
-
-The skill's own settings live in `.impeccable/config.json` (shared, committed) with
-per-developer overrides in the gitignored `.impeccable/config.local.json`. Toggle the
-per-edit design detector with `/impeccable hooks on` / `off`.
 
 ## Deployment
 
