@@ -69,8 +69,9 @@ QR codes can be styled before download:
 
 The white separator gap and dark center are always preserved, so any eye
 combination stays scannable. Path rendering lives in
-`src/utils/qrShapeRenderer.ts`, frame artwork in `src/utils/frameRenderer.ts`,
-and `src/utils/qrSvgComposer.ts` is the single source that composes the
+`packages/core/src/utils/qrShapeRenderer.ts` (shared with the MCP server),
+frame artwork in `apps/web/src/utils/frameRenderer.ts`, and
+`apps/web/src/utils/qrSvgComposer.ts` is the single source that composes the
 QR + frame SVG for the preview and all exports. Styling and frame state are
 owned by `useQRDesign` and persisted to `localStorage`.
 
@@ -136,8 +137,8 @@ the code. When you map structured columns, the caption is the readable
 field rather than the raw payload: a Wi-Fi code is captioned by its network
 name, a contact by its full name, a location by its `lat,long`, an event by
 its title, and so on. Plain text and URLs are captioned by their value. The
-page geometry lives in `src/utils/batch/labelSheetLayout.ts` and the PDF
-renderer in `src/utils/batch/buildLabelSheetPdf.ts`.
+page geometry lives in `apps/web/src/utils/batch/labelSheetLayout.ts` and the
+PDF renderer in `apps/web/src/utils/batch/buildLabelSheetPdf.ts`.
 
 > **Known limitation (TODO):** label-sheet captions render in Helvetica,
 > which has no Burmese glyphs, so a Burmese caption (e.g. a contact name or
@@ -148,10 +149,12 @@ renderer in `src/utils/batch/buildLabelSheetPdf.ts`.
 Every code inherits the design you last configured in the Generate tab:
 foreground/background colors, error correction, eye shapes, pixel pattern,
 gradient, and frame. Generation is fully client-side and reuses the same
-headless exporters as the single-QR download (`src/utils/export/`); the
-list is rendered and zipped in `src/utils/batch/` (with `fflate`), driven by
-`useBatchGenerator`. The pasted list persists to `localStorage` so switching
-tabs doesn't lose it.
+headless exporters as the single-QR download (`apps/web/src/utils/export/`);
+the list is rendered and zipped in `apps/web/src/utils/batch/` (with
+`fflate`), driven by `useBatchGenerator`. Parsing the pasted list/CSV and
+building structured payloads (Wi-Fi, vCard, etc.) lives in
+`packages/core/src/utils/batch/`, shared with the MCP server. The pasted
+list persists to `localStorage` so switching tabs doesn't lose it.
 
 ## Scanning
 
@@ -177,9 +180,9 @@ decodes it natively.
 On a successful decode the result shows the text and its detected content
 type, with actions to **Copy**, **Open** (for URLs), and **Edit in
 generator**, which round-trips the value back into the Generate flow. The
-pure decode/sniffing logic lives in `src/utils/qrDecode.ts` and
-`src/utils/imageFormat.ts`; the camera/canvas glue is in
-`src/hooks/useQrScanner.ts`.
+pure decode/sniffing logic lives in `apps/web/src/utils/qrDecode.ts` and
+`apps/web/src/utils/imageFormat.ts`; the camera/canvas glue is in
+`apps/web/src/hooks/useQrScanner.ts`.
 
 Every decoded scan is remembered under **Recently scanned**, mirroring the
 generate-side history: the last eight scans are kept in `localStorage`
@@ -187,8 +190,8 @@ generate-side history: the last eight scans are kept in `localStorage`
 readable label. Tapping a row restores it into the result panel — with the
 same Copy / Open / Edit-in-generator actions — each row has a remove button
 that forgets just that scan, and a clear button wipes the whole list. The
-list survives a reload. Storage lives in `src/utils/scanHistory.ts`; the row
-list is `ScanHistory.tsx`.
+list survives a reload. Storage lives in `apps/web/src/utils/scanHistory.ts`;
+the row list is `ScanHistory.tsx`.
 
 ## Stack
 
@@ -201,17 +204,42 @@ list is `ScanHistory.tsx`.
 - Testing: Vitest + React Testing Library + jest-dom
 - Linting/formatting: ESLint (type-aware) + Prettier
 
+## Monorepo layout
+
+QRCraft is an npm-workspaces monorepo: `apps/web` (this app), `packages/core`
+(`@qrcraft/core`, pure QR logic with no React/DOM/storage dependency, shared
+with `apps/mcp`), and `apps/mcp` (an MCP server exposing `generate_qr` and
+`generate_structured_qr` tools over stdio and Streamable HTTP). Root `npm run
+dev`/`build`/`test`/`lint` still work exactly as before from the repository
+root; they delegate into the workspaces internally. See
+[`docs/specs/monorepo-consolidation.md`](docs/specs/monorepo-consolidation.md)
+for the full rationale and migration.
+
 ## Project Structure
 
-- `src/components` – UI components (common primitives, feature views)
-- `src/hooks` – stateful logic/hooks
-- `src/utils` – pure helpers
-- `src/data` – data shapers/models (including `i18n` configs)
-- `src/types` – shared types
+- `apps/web/src/components` – UI components (common primitives, feature views)
+- `apps/web/src/hooks` – stateful logic/hooks
+- `apps/web/src/utils` – pure helpers that stay app-specific (DOM/canvas
+  rendering, `localStorage`-backed persistence)
+- `apps/web/src/data` – data shapers/models, plus the app-side `i18n` registry
+  and `getCopy()` resolver
+- `packages/core/src/utils` – pure QR logic shared with `apps/mcp`: payload
+  builders (Wi-Fi, vCard, email, SMS, tel, geo, vevent, crypto), QR geometry,
+  capacity/contrast/gradient/phone/country validation, and batch/CSV parsing
+- `packages/core/src/i18n` – the locale JSON files and the locale registry
+  (`SUPPORTED_LOCALES`) apps/web's i18n builds on
+- `packages/core/src/types` – shared types
+- `apps/mcp/src` – the MCP server: `server.ts` registers the tools,
+  `transports/` holds stdio and Streamable HTTP, `render.ts` wraps the
+  `qrcode` package's native Node output
 
 ## Localization (i18n)
 
-The app supports multiple languages (English and Spanish) via custom locale config files in `src/data/i18n/`.
+The app supports multiple languages (English and Spanish) via custom locale
+config files. The JSON copy and the locale registry
+(`SUPPORTED_LOCALES`) live in `packages/core/src/i18n/` (shared with the MCP
+server and a future mobile app); the app-side flatten/cache/`getCopy()`
+resolver lives in `apps/web/src/data/i18n/`.
 - Localized strings are stored in `en.json` and `es.json`.
 - Components consume translations via `useLocaleContext` and `translate(key)`.
 - User language preference is persisted in `localStorage`.
@@ -264,7 +292,8 @@ lands in `test-results/` and `playwright-report/` (both gitignored). On every
 PR to `main`, `.github/workflows/e2e.yml` runs the suite and uploads those as
 artifacts, so the screenshots and recording are reachable from the PR's checks.
 These tests are separate from the Vitest unit suite (`npm run test`); `e2e/` is
-excluded from Vitest in `vite.config.ts` so the two runners do not collide.
+excluded from Vitest in `apps/web/vite.config.ts` so the two runners do not
+collide.
 
 ## AI skills
 
@@ -312,7 +341,7 @@ npm run docker:run
 
 ## Quality & Constitution Highlights
 
-- Every change must add/update relevant unit tests, maintain ≥85% coverage, and all tests must pass before merge.
+- Every change must add/update relevant unit tests, maintain ≥85% coverage for `apps/web` and ≥95% (branches ≥90%) for `packages/core`, and all tests must pass before merge.
 - Every user-facing feature or fix must have a Playwright e2e spec in `e2e/` that proves the scenario works in a real browser.
 - Run `npm run test && npm run lint && npm run build && npm run test:e2e` before opening a PR. All four must pass.
 - UI must be fully functional and consistent across desktop/mobile and major browsers via responsive design.
@@ -328,7 +357,7 @@ npm run docker:run
 
 ## Tailwind v4 Notes
 
-- Entry point: `src/index.css` imports `tailwindcss` and defines base/component layers.
+- Entry point: `apps/web/src/index.css` imports `tailwindcss` and defines base/component layers.
 - Vite integration: `@tailwindcss/vite` plugin plus `@tailwindcss/postcss` in `postcss.config.cjs`.
 
 ## CI/CD & Deployment
@@ -358,5 +387,5 @@ Repo admins must enable **Dependabot alerts** and **Dependabot security updates*
 The application injects `SoftwareApplication` JSON-LD structured data into the document head for rich search results.
 
 **Key Configuration:**
-- The application URL is hardcoded in `src/components/common/SEOHead.tsx`.
+- The application URL is hardcoded in `apps/web/src/components/common/SEOHead.tsx`.
 - The site serves from the custom domain in `CNAME` (`qrcraft.pyaethuaung.com`). If that domain changes, you **MUST** update `CNAME` and the `url` property in `SEOHead.tsx` together — they must agree to maintain valid schema markup.
