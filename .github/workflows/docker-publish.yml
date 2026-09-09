@@ -26,6 +26,7 @@ on:
       - 'apps/web/tailwind.config.js'
       - 'apps/web/postcss.config.cjs'
       - 'packages/core/src/**'
+      - 'packages/core/package.json'
       - 'packages/core/tsconfig*.json'
       - 'package.json'
       - 'package-lock.json'
