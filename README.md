@@ -242,8 +242,8 @@ The app supports multiple languages (English and Spanish) via custom locale conf
 
 End-to-end / visual tests live in `e2e/` and drive the running app in a real
 browser, capturing a full-page screenshot and a video per run across desktop
-and mobile, light and dark. `/impeccable critique` uses the same setup.
-Contributor guide: [`e2e/README.md`](e2e/README.md).
+and mobile, light and dark. Contributor guide:
+[`e2e/README.md`](e2e/README.md).
 
 ```bash
 npm run test:e2e                              # all projects (desktop/mobile x light/dark)
@@ -268,12 +268,15 @@ excluded from Vitest in `vite.config.ts` so the two runners do not collide.
 
 ## AI skills
 
-The only skill installed is [`/impeccable`](https://github.com/pbakaus/impeccable),
-for designing and auditing the interface. `commit-message`, `create-pr`,
-`update-readme`, `develop-web-feature` and the `speckit-*` set were removed,
-along with the two `PreToolUse` hooks that forced commits and PRs through the
-first two. The commit conventions in `CLAUDE.md` still apply; they are simply
+None are installed in the repository. `commit-message`, `create-pr`,
+`update-readme`, `develop-web-feature`, the `speckit-*` set and `impeccable` were
+all removed, along with the two `PreToolUse` hooks that forced commits and PRs
+through the first two. The commit conventions in `CLAUDE.md` still apply; they are
 no longer mechanically enforced.
+
+[impeccable](https://github.com/pbakaus/impeccable) is expected back as a Claude
+Code **plugin** (`/plugin`) rather than a vendored copy, so it installs outside the
+repository and needs no committed tooling or permission grants.
 
 ### Hands-off permissions
 
@@ -281,9 +284,8 @@ no longer mechanically enforced.
 > - Run `claude` interactively in this repo once and accept the trust dialog.
 > - Or set `projects["/absolute/path/to/qr-generator"].hasTrustDialogAccepted: true` in your personal Claude config (`~/.claude.json`).
 
-The `/impeccable` skill requires one separate manual entry:
-
-- **`Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)`** — persists critique snapshots; the `$SLUG` variable expansion triggers Claude Code's obfuscation heuristic without it.
+Grants live in the gitignored `.claude/settings.local.json`; the committed
+`.claude/settings.json` is empty and should stay that way.
 
 ## Docker Support
 
