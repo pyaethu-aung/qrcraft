@@ -99,22 +99,27 @@ If a task touches more than two categories, stage and commit one at a time.
 
 ## Agent tooling
 
-No skills are installed in the repository. `commit-message`, `create-pr`,
-`update-readme`, `develop-web-feature`, the `speckit-*` set and `impeccable` were
-all removed, along with `.agents/`, `.claude/skills/`, `.github/skills/`,
-`.impeccable/`, the impeccable subagent definitions in `.claude/agents/`, and
-`skills-lock.json`.
+Everything is installed as **Claude Code plugins** (`/plugin`) rather than the
+old vendored `.agents/` tree with `skills-lock.json`, both of which are gone.
 
-The two `PreToolUse` hooks went with them. They forced `git commit` and
-`gh pr create` through `commit-message` and `create-pr`, so leaving them would have
-demanded skills that no longer exist and blocked committing outright.
-`.claude/settings.json` is now empty. The commit discipline documented above still
-stands; it is simply no longer mechanically enforced.
+| Source | Provides |
+|---|---|
+| `impeccable` plugin | `/impeccable`, plus a vendored copy at `.claude/skills/impeccable/` and four subagents in `.claude/agents/` |
+| `git-workflow` plugin | `/git-workflow:commit-message`, `/git-workflow:create-pr`, and the `PreToolUse` guards that enforce them |
+| `web-dev` plugin | `/web-dev:develop-web-feature`, `/web-dev:update-readme` |
 
-`impeccable` is expected back as a **Claude Code plugin** rather than a vendored
-copy. A plugin installs outside the repository, so it needs no `.agents/` tree, no
-`skills-lock.json` entry, and no committed permission grants. Install it with
-`/plugin`.
+The `speckit-*` set was removed outright and is not coming back.
+
+**Committing goes through the skill.** The git-workflow plugin restores a
+`PreToolUse` guard on `git commit` and `gh pr create`; a commit is allowed only
+when it carries `CLAUDE_COMMIT_VIA_SKILL=1`, which the skill sets. Do not bypass
+it with `--no-verify`.
+
+`impeccable` writes a repo-local copy into `.claude/skills/impeccable/` on init,
+and that copy **is committed** so a fresh clone has the reference files. Its
+~12 MB platform engine binary is not: `.gitignore` excludes
+`.claude/skills/impeccable/scripts/bin/`, and the launcher downloads the right
+one into `~/.impeccable/` on first run.
 
 ### Permissions
 

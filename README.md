@@ -268,15 +268,13 @@ excluded from Vitest in `vite.config.ts` so the two runners do not collide.
 
 ## AI skills
 
-None are installed in the repository. `commit-message`, `create-pr`,
-`update-readme`, `develop-web-feature`, the `speckit-*` set and `impeccable` were
-all removed, along with the two `PreToolUse` hooks that forced commits and PRs
-through the first two. The commit conventions in `CLAUDE.md` still apply; they are
-no longer mechanically enforced.
+Installed as Claude Code plugins (`/plugin`), not as a vendored `.agents/` tree:
+[impeccable](https://github.com/pbakaus/impeccable) for design work, plus
+`git-workflow` (commit and PR skills, with hooks that enforce them) and `web-dev`.
+The `speckit-*` set was removed.
 
-[impeccable](https://github.com/pbakaus/impeccable) is expected back as a Claude
-Code **plugin** (`/plugin`) rather than a vendored copy, so it installs outside the
-repository and needs no committed tooling or permission grants.
+`impeccable` keeps a copy at `.claude/skills/impeccable/`, which is committed; its
+platform engine binary is gitignored and downloaded on first run.
 
 ### Hands-off permissions
 
