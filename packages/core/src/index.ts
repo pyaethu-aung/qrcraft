@@ -39,10 +39,6 @@ export * from './data/countries'
 export * from './i18n/locales'
 
 // Types
-// Note: types/index.ts (QRConfig, ValidationResult) is legacy dead code, superseded
-// by types/qr.ts's QRConfig and unused anywhere in the codebase; not re-exported here
-// to avoid the name collision. The file still moved since "everything in src/types/"
-// did, per the spec.
 export type * from './types/qr'
 export type * from './types/i18n'
 export type * from './types/seo'
