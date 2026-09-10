@@ -12,8 +12,10 @@ export default defineConfig({
     // to CommonJS, and Vite's live CJS interop for that path doesn't reliably
     // detect every named export of a large `export *` barrel (unlike the
     // esbuild-based dep-optimizer, which handles this correctly). Forcing it
-    // through the optimizer fixes named imports breaking in dev.
-    include: ['@qrcraft/core'],
+    // through the optimizer fixes named imports breaking in dev. Every
+    // subpath actually imported needs its own entry here — the optimizer
+    // matches by exact specifier, not by package name.
+    include: ['@qrcraft/core', '@qrcraft/core/utils/qrDecode'],
   },
   build: {
     // The only bundle over Vite's 500 kB default is the on-demand HEIC codec

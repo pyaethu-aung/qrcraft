@@ -1,44 +1,9 @@
-import {
-  BinaryBitmap,
-  DecodeHintType,
-  HybridBinarizer,
-  QRCodeReader,
-  RGBLuminanceSource,
-} from '@zxing/library'
-
-/**
- * ZXing decode hints. TRY_HARDER trades a little speed for markedly better detection of
- * rotated, skewed, or low-contrast codes — the conditions in a photographed QR.
- */
-const DECODE_HINTS = new Map<DecodeHintType, unknown>([[DecodeHintType.TRY_HARDER, true]])
-
-/** Packs an ImageData's RGBA pixels into the 0xAARRGGBB int array ZXing's source expects. */
-function toArgb(image: ImageData): Int32Array {
-  const { data } = image
-  const argb = new Int32Array(image.width * image.height)
-  for (let i = 0; i < argb.length; i++) {
-    const o = i * 4
-    argb[i] = (0xff << 24) | (data[o] << 16) | (data[o + 1] << 8) | data[o + 2]
-  }
-  return argb
-}
-
-/**
- * Decodes a QR code from raw pixel data using ZXing's QR reader over a hybrid binarizer,
- * which is robust to the uneven lighting and screen moiré of a photographed code where a
- * simpler decoder fails. Pure and synchronous — the camera/upload glue turns a frame or
- * file into ImageData via a canvas. Returns the decoded string, or null when no QR is found.
- */
-export function decodeImageData(image: ImageData): string | null {
-  const source = new RGBLuminanceSource(toArgb(image), image.width, image.height)
-  const bitmap = new BinaryBitmap(new HybridBinarizer(source))
-  try {
-    return new QRCodeReader().decode(bitmap, DECODE_HINTS).getText()
-  } catch {
-    // ZXing throws NotFoundException (and friends) when no readable code is present.
-    return null
-  }
-}
+// The zxing-based pixel decoder itself has no DOM dependency, so it lives in
+// @qrcraft/core (shared with the MCP server's decode_qr tool). This module
+// re-exports it for existing call sites, and keeps everything that genuinely
+// is browser-only: the multi-scale retry planning around canvas size limits,
+// and the native BarcodeDetector wrapper.
+export { decodeImageData } from '@qrcraft/core/utils/qrDecode'
 
 /**
  * Longest-edge pixel sizes the library fallback is attempted at, largest first. There is no
