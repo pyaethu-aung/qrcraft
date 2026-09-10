@@ -11,6 +11,6 @@ import { defineConfig } from 'vitest/config'
 // with a failing package.json/vitest.config.ts coverage.thresholds setting.
 export default defineConfig({
   test: {
-    projects: ['apps/web', 'packages/core'],
+    projects: ['apps/web', 'packages/core', 'apps/mcp'],
   },
 })

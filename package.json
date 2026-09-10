@@ -15,7 +15,7 @@
     "lint:fix": "eslint . --fix",
     "test": "npm run build --workspace=packages/core && vitest",
     "test:watch": "npm run build --workspace=packages/core && vitest watch",
-    "test:coverage": "npm run build --workspace=packages/core && npm run test:coverage --workspace=packages/core && npm run test:coverage --workspace=apps/web",
+    "test:coverage": "npm run build --workspace=packages/core && npm run test:coverage --workspace=packages/core && npm run test:coverage --workspace=apps/web && npm run test:coverage --workspace=apps/mcp",
     "test:e2e": "npm run build --workspace=packages/core && npm run test:e2e --workspace=apps/web",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",

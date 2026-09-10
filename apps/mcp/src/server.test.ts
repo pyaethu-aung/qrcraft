@@ -1,0 +1,166 @@
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { Client } from '@modelcontextprotocol/sdk/client/index.js'
+import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { createServer } from './server.js'
+
+// Integration tests over the real MCP protocol layer (schema registration,
+// request/response serialization, tool dispatch) via the SDK's in-memory
+// transport pair — no subprocess, no network. This is the pattern the SDK's
+// own test suite uses; unit tests for the underlying logic live in
+// render.test.ts and decode.test.ts.
+
+let server: McpServer
+let client: Client
+
+beforeEach(async () => {
+  server = createServer()
+  client = new Client({ name: 'test-client', version: '0.0.0' })
+  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair()
+  await Promise.all([server.connect(serverTransport), client.connect(clientTransport)])
+})
+
+afterEach(async () => {
+  await client.close()
+  await server.close()
+})
+
+describe('tool registration', () => {
+  it('lists all three tools', async () => {
+    const { tools } = await client.listTools()
+    expect(tools.map(t => t.name).sort()).toEqual([
+      'decode_qr',
+      'generate_qr',
+      'generate_structured_qr',
+    ])
+  })
+})
+
+describe('generate_qr', () => {
+  it('returns a PNG image for a URL', async () => {
+    const result = await client.callTool({
+      name: 'generate_qr',
+      arguments: { content: 'https://example.com' },
+    })
+    const content = result.content as Array<{ type: string; data?: string; mimeType?: string }>
+    expect(content[0]).toMatchObject({ type: 'image', mimeType: 'image/png' })
+    expect(result.isError).toBeFalsy()
+  })
+
+  it('returns SVG text when format is svg', async () => {
+    const result = await client.callTool({
+      name: 'generate_qr',
+      arguments: { content: 'https://example.com', format: 'svg' },
+    })
+    const content = result.content as Array<{ type: string; text?: string }>
+    expect(content[0].type).toBe('text')
+    expect(content[0].text).toContain('<svg')
+  })
+
+  it('returns isError for content over the error-correction level capacity', async () => {
+    const result = await client.callTool({
+      name: 'generate_qr',
+      arguments: { content: 'x'.repeat(3000), ecLevel: 'H' },
+    })
+    expect(result.isError).toBe(true)
+  })
+
+  it('returns isError for a request missing the required content field', async () => {
+    const result = await client.callTool({ name: 'generate_qr', arguments: {} })
+    expect(result.isError).toBe(true)
+    const content = result.content as Array<{ text?: string }>
+    expect(content[0].text).toContain('Invalid arguments')
+  })
+})
+
+describe('generate_structured_qr', () => {
+  it('builds a Wi-Fi payload and renders it', async () => {
+    const result = await client.callTool({
+      name: 'generate_structured_qr',
+      arguments: {
+        payload: { type: 'wifi', ssid: 'MyNetwork', password: 'hunter2', security: 'WPA' },
+      },
+    })
+    expect(result.isError).toBeFalsy()
+    const content = result.content as Array<{ type: string; mimeType?: string }>
+    expect(content[0]).toMatchObject({ type: 'image', mimeType: 'image/png' })
+  })
+
+  it.each([
+    { type: 'vcard', firstName: 'Ada', lastName: 'Lovelace' },
+    { type: 'email', to: 'a@example.com' },
+    { type: 'sms', number: '+15551234567' },
+    { type: 'tel', number: '+15551234567' },
+    { type: 'geo', latitude: '51.5074', longitude: '-0.1278' },
+    { type: 'vevent', summary: 'Launch', start: '2026-01-01T10:00' },
+    { type: 'crypto', network: 'bitcoin', address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa' },
+  ])('builds a $type payload and renders it', async payload => {
+    const result = await client.callTool({
+      name: 'generate_structured_qr',
+      arguments: { payload },
+    })
+    expect(result.isError).toBeFalsy()
+    const content = result.content as Array<{ type: string; mimeType?: string }>
+    expect(content[0]).toMatchObject({ type: 'image', mimeType: 'image/png' })
+  })
+
+  it('returns isError when a required field for the content type is missing', async () => {
+    const result = await client.callTool({
+      name: 'generate_structured_qr',
+      arguments: { payload: { type: 'wifi', ssid: '' } },
+    })
+    expect(result.isError).toBe(true)
+    const content = result.content as Array<{ type: string; text?: string }>
+    expect(content[0].text).toContain('missing a required field')
+  })
+
+  it('returns isError for an unknown payload type', async () => {
+    const result = await client.callTool({
+      name: 'generate_structured_qr',
+      arguments: { payload: { type: 'not-a-real-type' } },
+    })
+    expect(result.isError).toBe(true)
+    const content = result.content as Array<{ text?: string }>
+    expect(content[0].text).toContain('Invalid arguments')
+  })
+})
+
+describe('decode_qr', () => {
+  it('round-trips a value generated by generate_qr', async () => {
+    const generated = await client.callTool({
+      name: 'generate_qr',
+      arguments: { content: 'https://example.com/round-trip' },
+    })
+    const content = generated.content as Array<{ data?: string }>
+    const base64 = content[0].data as string
+
+    const decoded = await client.callTool({ name: 'decode_qr', arguments: { image: base64 } })
+    expect(decoded.isError).toBeFalsy()
+    const decodedContent = decoded.content as Array<{ text?: string }>
+    const parsed = JSON.parse(decodedContent[0].text ?? '{}') as {
+      value: string
+      contentType: string
+      openableUrl: string | null
+    }
+    expect(parsed.value).toBe('https://example.com/round-trip')
+    expect(parsed.contentType).toBe('url')
+    expect(parsed.openableUrl).toBe('https://example.com/round-trip')
+  })
+
+  it('returns isError for bytes that are not a readable image', async () => {
+    const result = await client.callTool({
+      name: 'decode_qr',
+      arguments: { image: Buffer.from('not an image').toString('base64') },
+    })
+    expect(result.isError).toBe(true)
+  })
+
+  it('returns isError for a valid image with no QR code', async () => {
+    const blankPngBase64 =
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
+    const result = await client.callTool({ name: 'decode_qr', arguments: { image: blankPngBase64 } })
+    expect(result.isError).toBe(true)
+    const content = result.content as Array<{ text?: string }>
+    expect(content[0].text).toBe('No QR code found in the image.')
+  })
+})
