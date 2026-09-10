@@ -1,8 +1,9 @@
 # @qrcraft/mcp
 
-An MCP (Model Context Protocol) server that generates QR codes. It exposes two
-tools, over either transport, consuming `@qrcraft/core`'s payload builders and
-capacity guard directly — never a copy of that logic (see
+An MCP (Model Context Protocol) server that generates and reads QR codes. It
+exposes three tools, over either transport, consuming `@qrcraft/core`'s
+payload builders, capacity guard, and pixel decoder directly — never a copy
+of that logic (see
 [`docs/specs/monorepo-consolidation.md`](../../docs/specs/monorepo-consolidation.md)
 for why).
 
@@ -41,13 +42,31 @@ A payload missing a required field returns an `isError: true` text result
 ("`<type>`: missing a required field for this content type") rather than a
 malformed QR code.
 
-### Result shape
+### Result shape (`generate_qr` / `generate_structured_qr`)
 
-Both tools return one MCP content block: `{ type: 'image', data: <base64>,
+Both return one MCP content block: `{ type: 'image', data: <base64>,
 mimeType: 'image/png' }` for `format: 'png'`, or `{ type: 'text', text:
 <svg string> }` for `format: 'svg'`. Content over the error-correction
 level's byte capacity returns `isError: true` with a message naming the
 used/max byte counts, instead of throwing.
+
+### `decode_qr`
+
+Reads a QR code back out of an image.
+
+| Field | Type | Default | Notes |
+|---|---|---|---|
+| `image` | string (base64) | — | required, PNG/JPEG/BMP/GIF/TIFF |
+
+Returns one text content block, a JSON object: `{ value: string,
+contentType: 'url' \| 'wifi' \| 'vcard' \| 'email' \| 'sms' \| 'tel' \| 'geo'
+\| 'vevent' \| 'crypto' \| 'text', openableUrl: string | null }`.
+`openableUrl` is non-null only when `contentType` is `'url'` (an `http(s)`
+link, never `javascript:`/`file:`/etc.).
+
+Two distinct error paths, both `isError: true`: bytes that aren't a
+readable image at all ("Could not read the image: ..."), versus a valid
+image that just has no QR code in it ("No QR code found in the image.").
 
 ## Build & run
 
@@ -71,9 +90,10 @@ npm run dev --workspace=apps/mcp          # tsx, no build step, stdio
 npx @modelcontextprotocol/inspector node apps/mcp/dist/index.js
 ```
 
-Opens a local web UI to call either tool directly and inspect the returned
-image/SVG or error. Good for poking at edge cases (an over-capacity string,
-a Wi-Fi payload with no `ssid`) without writing a client.
+Opens a local web UI to call any of the three tools directly and inspect the
+returned image/SVG/JSON or error. Good for poking at edge cases (an
+over-capacity string, a Wi-Fi payload with no `ssid`, a non-image byte
+string for `decode_qr`) without writing a client.
 
 **Register with Claude Code:**
 
@@ -101,6 +121,11 @@ Claude Code registration above are the way to verify a change by hand.
   package's native Node output (`QRCode.toBuffer` / `QRCode.toString`), not
   `apps/web`'s DOM-bound `renderQrPngBlob` — no styled shapes, gradients,
   frames, or logos here, just the plain QR.
+- **Own image decoder too.** `decode.ts` uses Jimp (pure JS, no native
+  binary) to turn an uploaded image into raw pixel data, then the same
+  `decodeImageData` (`@qrcraft/core/utils/qrDecode`) the web app's Scan view
+  uses — not the web app's `BarcodeDetector`/canvas glue, which is
+  browser-only.
 - **HTTP sessions.** Each session gets its own `McpServer` instance (the
   SDK's `Protocol.connect()` throws if a transport is already attached to
   one, so a server can't be shared across sessions). Idle sessions (30 min
