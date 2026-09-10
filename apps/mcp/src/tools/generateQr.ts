@@ -6,7 +6,8 @@ export const generateQrInputSchema = {
   ...appearanceSchema,
 }
 
-export type GenerateQrInput = z.infer<ReturnType<typeof z.object<typeof generateQrInputSchema>>>
+export const generateQrInputObject = z.object(generateQrInputSchema)
+export type GenerateQrInput = z.infer<typeof generateQrInputObject>
 
 export async function handleGenerateQr(input: GenerateQrInput) {
   return renderQrToolResult(input.content, input)

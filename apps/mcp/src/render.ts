@@ -13,7 +13,8 @@ export const appearanceSchema = {
   light: z.string().default('#ffffff').describe('Background color, hex'),
 }
 
-export type RenderOptions = z.infer<ReturnType<typeof z.object<typeof appearanceSchema>>>
+export const appearanceObject = z.object(appearanceSchema)
+export type RenderOptions = z.infer<typeof appearanceObject>
 
 export class CapacityExceededError extends Error {
   readonly used: number

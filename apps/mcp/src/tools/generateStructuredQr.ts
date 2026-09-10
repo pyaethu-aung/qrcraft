@@ -74,9 +74,8 @@ export const generateStructuredQrInputSchema = {
 
 export type StructuredPayload = z.infer<typeof payloadSchema>
 
-export type GenerateStructuredQrInput = z.infer<
-  ReturnType<typeof z.object<typeof generateStructuredQrInputSchema>>
->
+export const generateStructuredQrInputObject = z.object(generateStructuredQrInputSchema)
+export type GenerateStructuredQrInput = z.infer<typeof generateStructuredQrInputObject>
 
 function buildPayloadString(payload: StructuredPayload): string {
   switch (payload.type) {
