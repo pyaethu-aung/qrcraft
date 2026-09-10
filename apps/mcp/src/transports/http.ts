@@ -11,6 +11,11 @@ import { createServer } from '../server.js'
 // the session map's size for a long-running process.
 const SESSION_IDLE_TIMEOUT_MS = 30 * 60 * 1000
 const SESSION_SWEEP_INTERVAL_MS = 5 * 60 * 1000
+// Hard cap on top of the idle sweep: this is an unauthenticated endpoint, and
+// a burst of `initialize` requests arriving faster than the sweep interval
+// would otherwise grow the session map (each entry holding a full McpServer +
+// transport) without bound.
+const MAX_SESSIONS = 1000
 
 interface Session {
   transport: StreamableHTTPServerTransport
@@ -24,20 +29,32 @@ export function startHttp(port: number): void {
 
   const sessions = new Map<string, Session>()
 
-  function getSession(req: Request): Session | undefined {
+  /** Looks up the session for a request and, if found, marks it as just used. */
+  function touchSession(req: Request): Session | undefined {
     const sessionId = req.header('mcp-session-id')
-    return sessionId ? sessions.get(sessionId) : undefined
+    const session = sessionId ? sessions.get(sessionId) : undefined
+    if (session) session.lastActivity = Date.now()
+    return session
   }
 
   const postHandler = async (req: Request, res: Response): Promise<void> => {
     try {
-      const session = getSession(req)
+      const session = touchSession(req)
 
       if (!session) {
         if (req.header('mcp-session-id') || !isInitializeRequest(req.body)) {
           res.status(400).json({
             jsonrpc: '2.0',
             error: { code: -32000, message: 'Bad Request: No valid session ID provided' },
+            id: null,
+          })
+          return
+        }
+
+        if (sessions.size >= MAX_SESSIONS) {
+          res.status(503).json({
+            jsonrpc: '2.0',
+            error: { code: -32000, message: 'Server busy: too many active sessions' },
             id: null,
           })
           return
@@ -62,7 +79,6 @@ export function startHttp(port: number): void {
         return
       }
 
-      session.lastActivity = Date.now()
       await session.transport.handleRequest(req, res, req.body)
     } catch (error) {
       console.error('Error handling MCP request:', error)
@@ -77,12 +93,11 @@ export function startHttp(port: number): void {
   }
 
   const sessionHandler = async (req: Request, res: Response): Promise<void> => {
-    const session = getSession(req)
+    const session = touchSession(req)
     if (!session) {
       res.status(400).send('Invalid or missing session ID')
       return
     }
-    session.lastActivity = Date.now()
     await session.transport.handleRequest(req, res)
   }
 
