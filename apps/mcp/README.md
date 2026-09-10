@@ -84,7 +84,20 @@ npm run dev --workspace=apps/mcp          # tsx, no build step, stdio
 
 ## Testing
 
-**MCP Inspector** (recommended — interactive, no client setup):
+`npm run test --workspace=apps/mcp` (or `npm run test:coverage` for the
+threshold-enforced run) exercises the real MCP protocol layer via the SDK's
+`InMemoryTransport` — a real `Client` and `McpServer` connected in-process
+(no subprocess, no network), calling `listTools()`/`callTool()` and
+asserting on the responses. This is the pattern the SDK's own test suite
+uses; see `src/server.test.ts` for the tool-dispatch/error-path coverage,
+and `src/render.test.ts` / `src/decode.test.ts` for unit tests on the
+underlying render/decode logic. `index.ts` (CLI arg parsing) and
+`transports/**` (stdio is a 6-line SDK wrapper; `http.ts`'s session
+management would need real HTTP integration tests, not unit tests) are
+excluded from coverage and verified by hand instead — the Inspector/Claude
+Code registration below.
+
+**MCP Inspector** (recommended for manual/exploratory checks — interactive, no client setup):
 
 ```bash
 npx @modelcontextprotocol/inspector node apps/mcp/dist/index.js
@@ -111,9 +124,8 @@ carries an `mcp-session-id` header), then include that header on every
 subsequent `tools/call` POST to the same endpoint. `GET`/`DELETE` on the same
 path resume a stream or terminate the session.
 
-There is no committed automated test suite for this app yet (no existing
-precedent for a Node-side app in this repo to follow) — the Inspector or the
-Claude Code registration above are the way to verify a change by hand.
+For a manual smoke test in a real client, the Inspector or the Claude Code
+registration above are the way to verify a change by hand.
 
 ## Architecture notes
 

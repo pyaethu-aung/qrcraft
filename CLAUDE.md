@@ -11,8 +11,8 @@ npm run lint            # ESLint (type-aware), whole workspace
 npm run lint:fix        # auto-fix lint errors
 npm run format          # Prettier check
 npm run format:fix      # Prettier write
-npm run test            # Vitest (watch mode), apps/web + packages/core
-npm run test:coverage   # per-package coverage (apps/web ≥85%, packages/core ≥95%/branches ≥90%)
+npm run test            # Vitest (watch mode), apps/web + packages/core + apps/mcp
+npm run test:coverage   # per-package coverage (apps/web ≥85%, packages/core ≥95%/branches ≥90%, apps/mcp ≥85%)
 npm run docker:build    # build production image
 npm run docker:run      # run container at http://localhost:8080
 ```
@@ -123,14 +123,23 @@ Headless rendering (no DOM preview) is shared: `renderQrPngBlob` (`apps/web/src/
 
 ## Testing
 
-Vitest with jsdom (apps/web) / Node (packages/core). Setup file:
+Vitest with jsdom (apps/web) / Node (packages/core, apps/mcp). Setup file:
 `apps/web/src/setupTests.ts` (imports `@testing-library/jest-dom`). Mock
 browser APIs (`navigator.share`, `ClipboardItem`) per test file. Coverage
 thresholds are per-package: `apps/web` **85%**, `packages/core` **95%**
-(branches **90%**, a known small gap — see the spec's "Changes from plan").
+(branches **90%**, a known small gap — see the spec's "Changes from plan"),
+`apps/mcp` **85%** (excluding `index.ts` and `transports/**` — see below).
 `apps/web/vite.config.ts` excludes `packages/core` from its own coverage
 collection (a symlinked workspace package would otherwise be double-counted
 against apps/web).
+
+`apps/mcp` tests the real MCP protocol layer via the SDK's
+`InMemoryTransport` — a real `Client` and `McpServer` connected in-process,
+calling `listTools()`/`callTool()` and asserting on responses (the pattern
+the SDK's own test suite uses; see `apps/mcp/src/server.test.ts`), plus
+plain unit tests on `render.ts`/`decode.ts`. `index.ts` and `transports/**`
+are excluded from its coverage — verified by hand (MCP Inspector, `claude
+mcp add`) instead, per `apps/mcp/README.md`'s Testing section.
 
 Mocking `@qrcraft/core` in an apps/web test: it's a built package, so its
 export namespace is frozen and `vi.spyOn` can't redefine an export on it
