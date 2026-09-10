@@ -190,7 +190,7 @@ describe('QRShareFallback', () => {
       notAllowedError.name = 'NotAllowedError'
       const shareSpy = vi.fn().mockRejectedValue(notAllowedError)
       vi.stubGlobal('navigator', {
-        ...global.navigator,
+        ...globalThis.navigator,
         share: shareSpy,
       })
 
@@ -226,7 +226,7 @@ describe('QRShareFallback', () => {
       notAllowedError.name = 'NotAllowedError'
       const shareSpy = vi.fn().mockRejectedValue(notAllowedError)
       vi.stubGlobal('navigator', {
-        ...global.navigator,
+        ...globalThis.navigator,
         share: shareSpy,
       })
 

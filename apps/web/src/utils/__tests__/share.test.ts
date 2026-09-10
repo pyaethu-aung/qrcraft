@@ -63,14 +63,14 @@ describe('share utils', () => {
   describe('supportsClipboardImage', () => {
     it('checks if clipboard image sharing is supported', () => {
       const originalClipboard = navigator.clipboard
-      const originalClipboardItem = global.ClipboardItem
+      const originalClipboardItem = globalThis.ClipboardItem
 
       Object.defineProperty(navigator, 'clipboard', {
         value: { write: vi.fn() },
         configurable: true
       })
       // @ts-expect-error - ClipboardItem might not be in the global type
-      global.ClipboardItem = vi.fn()
+      globalThis.ClipboardItem = vi.fn()
 
       expect(supportsClipboardImage()).toBe(true)
 
@@ -81,7 +81,7 @@ describe('share utils', () => {
       expect(supportsClipboardImage()).toBe(false)
 
       Object.defineProperty(navigator, 'clipboard', { value: originalClipboard, configurable: true })
-      global.ClipboardItem = originalClipboardItem
+      globalThis.ClipboardItem = originalClipboardItem
     })
   })
 
