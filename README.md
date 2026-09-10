@@ -180,8 +180,12 @@ decodes it natively.
 On a successful decode the result shows the text and its detected content
 type, with actions to **Copy**, **Open** (for URLs), and **Edit in
 generator**, which round-trips the value back into the Generate flow. The
-pure decode/sniffing logic lives in `apps/web/src/utils/qrDecode.ts` and
-`apps/web/src/utils/imageFormat.ts`; the camera/canvas glue is in
+pure pixel decoder (`decodeImageData`) lives in
+`packages/core/src/utils/qrDecode.ts`, shared with the MCP server's
+`decode_qr` tool; the browser-only pieces (multi-scale retry planning,
+the native `BarcodeDetector` wrapper) stay in
+`apps/web/src/utils/qrDecode.ts`, alongside format sniffing in
+`apps/web/src/utils/imageFormat.ts`. The camera/canvas glue is in
 `apps/web/src/hooks/useQrScanner.ts`.
 
 Every decoded scan is remembered under **Recently scanned**, mirroring the
@@ -225,7 +229,10 @@ for the full rationale and migration.
   and `getCopy()` resolver
 - `packages/core/src/utils` – pure QR logic shared with `apps/mcp`: payload
   builders (Wi-Fi, vCard, email, SMS, tel, geo, vevent, crypto), QR geometry,
-  capacity/contrast/gradient/phone/country validation, and batch/CSV parsing
+  capacity/contrast/gradient/phone/country validation, batch/CSV parsing, and
+  the pixel decoder (`qrDecode.ts`, exposed at the `@qrcraft/core/utils/qrDecode`
+  subpath so it isn't pulled into apps/web's eager entry chunk — see the
+  comment in `packages/core/src/index.ts`)
 - `packages/core/src/i18n` – the locale JSON files and the locale registry
   (`SUPPORTED_LOCALES`) apps/web's i18n builds on
 - `packages/core/src/types` – shared types
