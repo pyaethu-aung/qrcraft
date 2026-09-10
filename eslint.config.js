@@ -34,7 +34,15 @@ export default defineConfig([
     '.impeccable',
   ]),
   {
+    // Excludes apps/mcp: it is a Node process, not a browser context, and
+    // gets its own block below with Node globals instead of browser globals.
+    // ESLint's flat config merges languageOptions.globals across every
+    // matching block rather than replacing it, so layering a Node-globals
+    // block on top of this one (rather than excluding apps/mcp here) would
+    // leave window/document/navigator recognized as valid globals in the MCP
+    // server too, defeating the point of scoping them out.
     files: ['**/*.{ts,tsx}'],
+    ignores: ['apps/mcp/**/*.ts'],
     extends: [
       js.configs.recommended,
       ...tseslint.configs.recommendedTypeChecked,
@@ -50,7 +58,6 @@ export default defineConfig([
           './apps/web/tsconfig.app.json',
           './apps/web/tsconfig.node.json',
           './packages/core/tsconfig.json',
-          './apps/mcp/tsconfig.json',
         ],
         tsconfigRootDir: import.meta.dirname,
       },
@@ -61,15 +68,22 @@ export default defineConfig([
   },
   {
     // apps/mcp is a Node process (stdio/HTTP transports), not a browser
-    // context, so it needs Node globals (process, console, Buffer, ...)
-    // recognized. ESLint's flat config merges languageOptions.globals across
-    // every matching block rather than replacing it, so this adds to (not
-    // replaces) the browser globals the earlier **/*.{ts,tsx} block already
-    // declares for these files — harmless (declaring an unused global as
-    // known doesn't cause false positives), just not full isolation.
+    // context: Node globals instead of browser globals, so an accidental
+    // window/document/navigator reference here is a real lint error rather
+    // than a silently-recognized global.
     files: ['apps/mcp/**/*.ts'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommendedTypeChecked,
+      prettier,
+    ],
     languageOptions: {
+      ecmaVersion: 2020,
       globals: globals.node,
+      parserOptions: {
+        project: ['./apps/mcp/tsconfig.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
   },
   {
