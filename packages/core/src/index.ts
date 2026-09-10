@@ -19,6 +19,13 @@ export * from './utils/gradient'
 export * from './utils/phone'
 export * from './utils/country'
 export * from './utils/qrClassify'
+// qrDecode is deliberately NOT re-exported here: it pulls in @zxing/library
+// (~600 kB). core builds to CommonJS, where `require()` of a module is
+// all-or-nothing — an eager import of *anything* from this barrel would
+// drag zxing into apps/web's entry chunk too, defeating the app's deliberate
+// lazy-loading of the Scan view. Import decodeImageData from the dedicated
+// '@qrcraft/core/utils/qrDecode' subpath instead (see package.json exports),
+// so only a consumer that actually needs it pulls zxing in.
 
 // Batch parsing
 export * from './utils/batch/parseBatchInput'
