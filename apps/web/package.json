@@ -20,7 +20,7 @@
     "fflate": "^0.8.3",
     "heic-to": "^1.5.2",
     "jspdf": "^4.2.1",
-    "lucide-react": "^1.40.0",
+    "lucide-react": "^1.42.0",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.8",
