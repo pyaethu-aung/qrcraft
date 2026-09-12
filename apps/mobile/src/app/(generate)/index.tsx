@@ -36,6 +36,7 @@ export default function GenerateScreen() {
     isPending,
     capacityUsed,
     capacityMax,
+    isNearCapacity,
     isOverCapacity,
   } = useQrContent();
 
@@ -111,7 +112,7 @@ export default function GenerateScreen() {
         />
         <ThemedText
           type="mono"
-          themeColor={isOverCapacity ? 'error' : 'textSecondary'}
+          themeColor={isOverCapacity ? 'error' : isNearCapacity ? 'warning' : 'textSecondary'}
           style={styles.capacityCounter}>
           {capacityUsed}/{capacityMax}
         </ThemedText>

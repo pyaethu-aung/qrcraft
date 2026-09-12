@@ -149,6 +149,7 @@ export interface QrContentStore {
   isUsable: boolean;
   capacityUsed: number;
   capacityMax: number;
+  isNearCapacity: boolean;
   isOverCapacity: boolean;
   inputError?: string;
 }
@@ -251,6 +252,7 @@ export function QrContentProvider({ children }: { children: ReactNode }) {
       isUsable,
       capacityUsed: capacity.used,
       capacityMax: capacity.max,
+      isNearCapacity: capacity.isNearLimit,
       isOverCapacity: capacity.isOverLimit,
       inputError,
     }),
@@ -284,6 +286,7 @@ export function QrContentProvider({ children }: { children: ReactNode }) {
       isUsable,
       capacity.used,
       capacity.max,
+      capacity.isNearLimit,
       capacity.isOverLimit,
       inputError,
     ],
