@@ -1,8 +1,24 @@
 import type { QRContentMode } from '@qrcraft/core';
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming, interpolateColor } from 'react-native-reanimated';
+import { SymbolView } from 'expo-symbols';
+import { ChevronRight } from 'lucide-react-native';
+import { useEffect, useRef, useState } from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  type LayoutChangeEvent,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from 'react-native';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  interpolateColor,
+} from 'react-native-reanimated';
 
 import { PressableScale } from '@/components/pressable-scale';
 import { ThemedText } from '@/components/themed-text';
@@ -26,28 +42,73 @@ const CONTENT_TYPES: { mode: QRContentMode; label: string }[] = [
 // pushes the shared structured-form screen (build sequence step 5).
 export function ContentTypePills() {
   const router = useRouter();
+  const theme = useTheme();
   const { contentMode, setContentMode } = useQrContent();
 
+  // Row height is measured, not fixed — a fixed height clips pill labels
+  // at large Dynamic Type sizes (an /impeccable audit finding); it starts
+  // at MinTouchTarget so the row is never zero-height before the first
+  // onContentSizeChange (a horizontal ScrollView nested in a vertical one
+  // otherwise collapses without an explicit height).
+  const [rowHeight, setRowHeight] = useState(MinTouchTarget);
+  // Trailing chevron while more pills sit off-screen — 4 of 9 content
+  // types had no discoverability cue beyond an accidentally truncated
+  // glyph at the edge (same audit).
+  const [hasMoreToScroll, setHasMoreToScroll] = useState(false);
+  const viewportWidth = useRef(0);
+  const contentWidth = useRef(0);
+
+  const updateScrollAffordance = (offsetX: number) => {
+    setHasMoreToScroll(contentWidth.current - (offsetX + viewportWidth.current) > 4);
+  };
+
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.scrollView}
-      contentContainerStyle={styles.row}>
-      {CONTENT_TYPES.map(({ mode, label }) => (
-        <Pill
-          key={mode}
-          label={label}
-          active={mode === contentMode}
-          onPress={() => {
-            setContentMode(mode);
-            if (mode !== 'text') {
-              router.push({ pathname: '/(generate)/form', params: { type: mode } });
-            }
-          }}
-        />
-      ))}
-    </ScrollView>
+    <View style={styles.wrapper}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={[styles.scrollView, { height: rowHeight }]}
+        contentContainerStyle={styles.row}
+        onLayout={(e: LayoutChangeEvent) => {
+          viewportWidth.current = e.nativeEvent.layout.width;
+          updateScrollAffordance(0);
+        }}
+        onContentSizeChange={(width, height) => {
+          contentWidth.current = width;
+          setRowHeight(Math.max(MinTouchTarget, height));
+          updateScrollAffordance(0);
+        }}
+        onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => updateScrollAffordance(e.nativeEvent.contentOffset.x)}
+        scrollEventThrottle={32}>
+        {CONTENT_TYPES.map(({ mode, label }) => (
+          <Pill
+            key={mode}
+            label={label}
+            active={mode === contentMode}
+            onPress={() => {
+              setContentMode(mode);
+              if (mode !== 'text') {
+                router.push({ pathname: '/(generate)/form', params: { type: mode } });
+              }
+            }}
+          />
+        ))}
+      </ScrollView>
+      {hasMoreToScroll ? (
+        <Animated.View
+          pointerEvents="none"
+          entering={FadeIn.duration(150)}
+          exiting={FadeOut.duration(150)}
+          style={styles.scrollHint}>
+          <SymbolView
+            name={{ ios: 'chevron.right' }}
+            size={14}
+            tintColor={theme.textSecondary}
+            fallback={<ChevronRight size={14} color={theme.textSecondary} />}
+          />
+        </Animated.View>
+      ) : null}
+    </View>
   );
 }
 
@@ -78,16 +139,24 @@ function Pill({ label, active, onPress }: { label: string; active: boolean; onPr
 }
 
 const styles = StyleSheet.create({
-  // A horizontal ScrollView nested in a vertical one collapses to zero
-  // height without an explicit height on the scroller itself —
-  // contentContainerStyle alone isn't enough to size it.
+  wrapper: {
+    position: 'relative',
+  },
   scrollView: {
-    height: MinTouchTarget,
     flexGrow: 0,
   },
   row: {
     gap: Spacing.xs / 2,
     paddingRight: Spacing.md,
+  },
+  scrollHint: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   pill: {
     paddingHorizontal: Spacing.md,
