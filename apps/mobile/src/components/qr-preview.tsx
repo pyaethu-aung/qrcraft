@@ -75,9 +75,20 @@ export function QrPreview({ value, ecLevel, fgColor, bgColor, design, size, isPe
   const eyeFrameFill = design.eyeFrameColor ?? fgColor
   const eyeCenterFill = design.eyeCenterColor ?? fgColor
 
+  // Keyed on everything that actually re-renders the module grid: content
+  // (`value` — already the 300ms-debounced liveValue from useQrContent, so
+  // this fires in bursts as a sentence is typed, not on every keystroke),
+  // reliability's EC level, and eye/pixel shape. Remounting on that key —
+  // and with it the entering/exiting crossfade below — is what turns "a
+  // totally different QR pattern replaces the old one instantly" into a
+  // transition. The two fill colors are excluded on purpose: recoloring
+  // the same grid in place needs no transition, only a value/shape change
+  // that redraws the modules does.
+  const shapeKey = `qr-${value}-${ecLevel}-${design.eyeFrameShape}-${design.eyeCenterShape}-${design.pixelPattern}`
+
   return (
     <Animated.View
-      key="qr"
+      key={shapeKey}
       entering={FadeIn.duration(150)}
       exiting={FadeOut.duration(150)}
       style={[styles.container, { width: size, height: size }]}>
