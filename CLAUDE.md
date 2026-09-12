@@ -44,9 +44,18 @@ qrcraft/
 │                     the same dist/ build via workspace resolution.
 ├── apps/web/         the app (this file's main subject) — everything
 │                     under "Architecture" below lives here unless noted
-└── apps/mcp/         MCP server: generate_qr / generate_structured_qr
-                      tools over stdio + Streamable HTTP, consuming
-                      @qrcraft/core directly (never copies its logic)
+├── apps/mcp/         MCP server: generate_qr / generate_structured_qr
+│                     tools over stdio + Streamable HTTP, consuming
+│                     @qrcraft/core directly (never copies its logic)
+└── apps/mobile/      QRCraft for iOS/Android (Expo managed, expo-router).
+                      Generate/Scan/Saved tabs over the same @qrcraft/core
+                      builders and qrShapeRenderer (drawn via
+                      react-native-svg) — no batch, no SVG/PDF export
+                      (PNG + share sheet only). See
+                      docs/specs/qrcraft-mobile.md for the full design
+                      and its "Changes from plan" for what's still open
+                      (FR-010 Keychain/Keystore exclusion not yet done,
+                      not verified on a physical device).
 ```
 
 **Vite dev-server gotcha:** Vite excludes linked workspace packages from
