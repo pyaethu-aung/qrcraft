@@ -11,11 +11,15 @@ void SplashScreen.preventAutoHideAsync();
 
 // Applied once at module load (not inside an effect) so the override takes
 // effect before the first paint — Settings' theme control re-applies it via
-// the same Appearance.setColorScheme call when changed at runtime.
+// the same Appearance.setColorScheme call when changed at runtime. Always
+// calls setColorScheme, even for 'system' ('unspecified' clears it) rather
+// than skipping the call — Appearance's override is native-process state,
+// not re-derived from MMKV on its own, so a 'system' persisted setting has
+// to actively clear a stray override (e.g. left over from a previous JS
+// bundle reload within the same long-lived native process) instead of just
+// hoping none is set.
 const persistedThemeOverride = getSettings().themeOverride;
-if (persistedThemeOverride !== 'system') {
-  Appearance.setColorScheme(persistedThemeOverride);
-}
+Appearance.setColorScheme(persistedThemeOverride === 'system' ? 'unspecified' : persistedThemeOverride);
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
