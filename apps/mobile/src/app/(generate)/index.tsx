@@ -113,7 +113,8 @@ export default function GenerateScreen() {
         <ThemedText
           type="mono"
           themeColor={isOverCapacity ? 'error' : isNearCapacity ? 'warning' : 'textSecondary'}
-          style={styles.capacityCounter}>
+          style={styles.capacityCounter}
+          accessibilityLabel={`${capacityUsed} of ${capacityMax} characters used`}>
           {capacityUsed}/{capacityMax}
         </ThemedText>
         {inputError ? (
