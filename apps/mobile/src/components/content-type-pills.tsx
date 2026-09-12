@@ -139,15 +139,22 @@ function Pill({ label, active, onPress }: { label: string; active: boolean; onPr
 }
 
 const styles = StyleSheet.create({
+  // Bleeds to the screen edges instead of sitting in the parent
+  // ScrollView's Spacing.md content padding like every other row on the
+  // screen — a horizontally scrollable chip strip reads as scrollable
+  // when it isn't boxed in the same inset as the static cards below it.
+  // The row's own paddingLeft/Right restores the same visual start
+  // position, just inside the scrollable content instead of fixed.
   wrapper: {
     position: 'relative',
+    marginHorizontal: -Spacing.md,
   },
   scrollView: {
     flexGrow: 0,
   },
   row: {
     gap: Spacing.xs / 2,
-    paddingRight: Spacing.md,
+    paddingHorizontal: Spacing.md,
   },
   scrollHint: {
     position: 'absolute',
