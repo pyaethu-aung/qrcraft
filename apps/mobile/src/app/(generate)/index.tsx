@@ -93,6 +93,7 @@ export default function GenerateScreen() {
       style={[styles.container, { backgroundColor: theme.surface }]}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
       automaticallyAdjustKeyboardInsets>
       <ContentTypePills />
 
