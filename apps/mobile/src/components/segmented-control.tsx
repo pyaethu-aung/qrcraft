@@ -21,7 +21,11 @@ const EASE_IN_OUT = Easing.bezier(0.77, 0, 0.175, 1);
 // selected segment (measured via onLayout, animated as transform +
 // width — sanctioned because the pill is absolutely positioned with no
 // children, so nothing else re-lays-out) rather than each segment fading
-// its own background in and out.
+// its own background in and out. The pill fills with `theme.action`
+// (terracotta), matching DESIGN.md's Terracotta Economy rule, which names
+// "the active state of a segmented control" as one of the accent's three
+// sanctioned uses — a flat neutral fill measured under 2:1 contrast
+// against its own track (impeccable critique, 2026-09-12).
 export interface SegmentedControlOption<T extends string> {
   value: T;
   label: string;
@@ -71,7 +75,7 @@ export function SegmentedControl<T extends string>({
     <View style={[styles.track, { backgroundColor: theme.surfaceInset }, style]}>
       <Animated.View
         pointerEvents="none"
-        style={[styles.indicator, { backgroundColor: theme.surfaceRaised }, indicatorStyle]}
+        style={[styles.indicator, { backgroundColor: theme.action }, indicatorStyle]}
       />
       {options.map((option) => (
         <Segment
@@ -115,7 +119,7 @@ function Segment({
       accessibilityRole="button"
       accessibilityState={{ selected }}
       style={[styles.segment, { minHeight: MinTouchTarget }]}>
-      <ThemedText type="label" numberOfLines={1} themeColor={selected ? 'textPrimary' : 'textSecondary'}>
+      <ThemedText type="label" numberOfLines={1} themeColor={selected ? 'actionFg' : 'textSecondary'}>
         {label}
       </ThemedText>
     </PressableScale>
