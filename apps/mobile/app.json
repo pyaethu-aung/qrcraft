@@ -41,6 +41,13 @@
           "enableFrameProcessors": false,
           "enableCodeScanner": true
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": false,
+          "savePhotosPermission": "QRCraft needs access to save your QR code to Photos."
+        }
       ]
     ],
     "experiments": {

@@ -1,9 +1,11 @@
+import { Asset, requestPermissionsAsync } from 'expo-media-library';
 import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { Palette } from 'lucide-react-native';
-import { useEffect } from 'react';
-import { ScrollView, Share, StyleSheet, TextInput } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, Share, StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { captureRef } from 'react-native-view-shot';
 
 import { ContentTypePills } from '@/components/content-type-pills';
 import { PressableScale } from '@/components/pressable-scale';
@@ -42,12 +44,43 @@ export default function GenerateScreen() {
   // Both animate a state the interface confirms after the fact (find-
   // animation-opportunities review), not per-keystroke data — the 150ms
   // duration and FadeIn/FadeOut match the convention already used by Pill,
-  // SegmentedControl, SwatchRow, and QrPreview's crossfade.
+  // SegmentedControl, SwatchRow, and QrPreview's crossfade. Shared by Save
+  // to Photos and Share below — both gate on the same isUsable condition.
   const shareOpacity = useSharedValue(shareDisabled ? 0.5 : 1);
   useEffect(() => {
     shareOpacity.value = withTiming(shareDisabled ? 0.5 : 1, { duration: 150 });
   }, [shareDisabled, shareOpacity]);
   const shareAnimatedStyle = useAnimatedStyle(() => ({ opacity: shareOpacity.value }));
+
+  const qrCaptureRef = useRef<View>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedFeedback, setSavedFeedback] = useState(false);
+
+  const handleSaveToPhotos = async () => {
+    if (isSaving) return;
+    setIsSaving(true);
+    try {
+      // Write-only request: this app only ever adds a photo, never reads
+      // the library, so it asks for the narrower NSPhotoLibraryAddUsageDescription
+      // permission rather than full read/write access.
+      const permission = await requestPermissionsAsync(true);
+      if (!permission.granted) {
+        Alert.alert(
+          'Photo library access needed',
+          'Allow QRCraft to save photos in Settings to save your QR code.',
+        );
+        return;
+      }
+      const uri = await captureRef(qrCaptureRef, { format: 'png', quality: 1 });
+      await Asset.create(uri);
+      setSavedFeedback(true);
+      setTimeout(() => setSavedFeedback(false), 1500);
+    } catch {
+      Alert.alert('Couldn’t save', 'Something went wrong saving your QR code. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     // ScrollView is the screen's own root (not wrapped in another View) —
@@ -91,27 +124,46 @@ export default function GenerateScreen() {
       </ThemedView>
 
       <ThemedView type="surfaceRaised" glass style={styles.previewCard}>
-        <QrPreview
-          value={liveValue}
-          ecLevel={ecLevel}
-          fgColor={fgColor}
-          bgColor={bgColor}
-          design={design}
-          size={QR_PREVIEW_SIZE}
-          isPending={isPending}
-        />
+        {/* collapsable={false}: without it Android can optimize this plain
+            wrapper out of the native tree, and react-native-view-shot has
+            nothing to capture. */}
+        <View ref={qrCaptureRef} collapsable={false}>
+          <QrPreview
+            value={liveValue}
+            ecLevel={ecLevel}
+            fgColor={fgColor}
+            bgColor={bgColor}
+            design={design}
+            size={QR_PREVIEW_SIZE}
+            isPending={isPending}
+          />
+        </View>
         <ReliabilitySelector value={ecLevel} onChange={setEcLevel} />
       </ThemedView>
 
       <PressableScale
-        disabled
+        onPress={() => {
+          void handleSaveToPhotos();
+        }}
+        disabled={shareDisabled || isSaving}
         accessibilityRole="button"
-        accessibilityState={{ disabled: true }}
-        style={[styles.primaryButton, { minHeight: MinTouchTarget, backgroundColor: theme.actionDisabled }]}>
-        <ThemedText type="label" themeColor="actionFg">
-          Save to Photos (coming soon)
-        </ThemedText>
+        accessibilityState={{ disabled: shareDisabled || isSaving, busy: isSaving }}
+        style={[styles.primaryButton, { minHeight: MinTouchTarget, backgroundColor: theme.action }, shareAnimatedStyle]}>
+        {isSaving ? (
+          <ActivityIndicator color={theme.actionFg} />
+        ) : (
+          <ThemedText type="label" themeColor="actionFg">
+            Save to Photos
+          </ThemedText>
+        )}
       </PressableScale>
+      {savedFeedback ? (
+        <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(150)}>
+          <ThemedText type="body" themeColor="textSecondary" style={styles.savedFeedback}>
+            Saved to Photos
+          </ThemedText>
+        </Animated.View>
+      ) : null}
 
       <ThemedView style={styles.secondaryRow}>
         <PressableScale
@@ -178,6 +230,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: MinTouchTarget,
+  },
+  savedFeedback: {
+    textAlign: 'center',
+    marginTop: -Spacing.xs,
   },
   secondaryRow: {
     flexDirection: 'row',
