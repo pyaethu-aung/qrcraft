@@ -102,7 +102,7 @@ export default function GenerateScreen() {
           value={text}
           onChangeText={setText}
           placeholder="Paste or type a URL"
-          placeholderTextColor={theme.textDisabled}
+          placeholderTextColor={theme.textSecondary}
           autoCapitalize="none"
           autoCorrect={false}
           keyboardType="url"
