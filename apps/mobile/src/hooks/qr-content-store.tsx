@@ -22,7 +22,7 @@ import type {
   VEventConfig,
   WiFiConfig,
 } from '@qrcraft/core';
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import {
   DEFAULT_QR_BG_COLOR,
@@ -97,11 +97,15 @@ function buildRawValue(mode: QRContentMode, configs: {
 /** Raw field-length proxy for the capacity counter — the built payload for
  * structured modes, or the text field itself in text mode (matches
  * apps/web: the counter measures what the user is typing, not the built
- * payload, so it stays meaningful even while a required field is missing). */
-function rawCapacityInput(mode: QRContentMode, configs: Parameters<typeof buildRawValue>[1]): string {
+ * payload, so it stays meaningful even while a required field is missing).
+ * Takes the already-built rawValue rather than calling buildRawValue again. */
+function rawCapacityInput(
+  mode: QRContentMode,
+  configs: Parameters<typeof buildRawValue>[1],
+  builtRawValue: string,
+): string {
   if (mode === 'text') return configs.text;
-  const built = buildRawValue(mode, configs);
-  return built || JSON.stringify(configs[mode]);
+  return builtRawValue || JSON.stringify(configs[mode]);
 }
 
 export interface QrContentStore {
@@ -170,15 +174,24 @@ export function QrContentProvider({ children }: { children: ReactNode }) {
 
   const [liveValue, setLiveValue] = useState('');
 
-  const setWifi = (patch: Partial<WiFiConfig>) => setWifiState((prev) => ({ ...prev, ...patch }));
-  const setVCard = (patch: Partial<VCardConfig>) => setVCardState((prev) => ({ ...prev, ...patch }));
-  const setEmail = (patch: Partial<EmailConfig>) => setEmailState((prev) => ({ ...prev, ...patch }));
-  const setSms = (patch: Partial<SmsConfig>) => setSmsState((prev) => ({ ...prev, ...patch }));
-  const setTel = (patch: Partial<TelConfig>) => setTelState((prev) => ({ ...prev, ...patch }));
-  const setGeo = (patch: Partial<GeoConfig>) => setGeoState((prev) => ({ ...prev, ...patch }));
-  const setVEvent = (patch: Partial<VEventConfig>) => setVEventState((prev) => ({ ...prev, ...patch }));
-  const setCrypto = (patch: Partial<CryptoConfig>) => setCryptoState((prev) => ({ ...prev, ...patch }));
-  const setDesign = (patch: Partial<QRDesignConfig>) => setDesignState((prev) => ({ ...prev, ...patch }));
+  // useCallback with no deps: the underlying setState setters (setWifiState
+  // etc.) are themselves stable, so these wrappers can have a stable
+  // identity too — without it, every QrContentProvider render (i.e. every
+  // keystroke in any field) handed every consumer a brand-new store object
+  // and brand-new setter functions, re-rendering all of them regardless of
+  // what they actually read (found by an /impeccable audit).
+  const setWifi = useCallback((patch: Partial<WiFiConfig>) => setWifiState((prev) => ({ ...prev, ...patch })), []);
+  const setVCard = useCallback((patch: Partial<VCardConfig>) => setVCardState((prev) => ({ ...prev, ...patch })), []);
+  const setEmail = useCallback((patch: Partial<EmailConfig>) => setEmailState((prev) => ({ ...prev, ...patch })), []);
+  const setSms = useCallback((patch: Partial<SmsConfig>) => setSmsState((prev) => ({ ...prev, ...patch })), []);
+  const setTel = useCallback((patch: Partial<TelConfig>) => setTelState((prev) => ({ ...prev, ...patch })), []);
+  const setGeo = useCallback((patch: Partial<GeoConfig>) => setGeoState((prev) => ({ ...prev, ...patch })), []);
+  const setVEvent = useCallback(
+    (patch: Partial<VEventConfig>) => setVEventState((prev) => ({ ...prev, ...patch })),
+    [],
+  );
+  const setCrypto = useCallback((patch: Partial<CryptoConfig>) => setCryptoState((prev) => ({ ...prev, ...patch })), []);
+  const setDesign = useCallback((patch: Partial<QRDesignConfig>) => setDesignState((prev) => ({ ...prev, ...patch })), []);
 
   const configs = { text, wifi, vcard, email, sms, tel, geo, vevent, crypto };
   const rawValue = buildRawValue(contentMode, configs);
@@ -188,7 +201,7 @@ export function QrContentProvider({ children }: { children: ReactNode }) {
       ? `Input too long (max ${QR_INPUT_LENGTH_LIMIT} characters)`
       : undefined;
 
-  const capacityInput = rawCapacityInput(contentMode, configs);
+  const capacityInput = rawCapacityInput(contentMode, configs, rawValue);
   const capacity = getCapacityStatus(capacityInput, ecLevel);
   const isBlocked = Boolean(inputError) || capacity.isOverLimit;
   const isUsable = Boolean(rawValue.trim()) && !isBlocked;
@@ -202,44 +215,79 @@ export function QrContentProvider({ children }: { children: ReactNode }) {
 
   const isPending = isUsable && liveValue !== rawValue.trim();
 
-  const store: QrContentStore = {
-    contentMode,
-    setContentMode,
-    text,
-    setText,
-    wifi,
-    setWifi,
-    vcard,
-    setVCard,
-    email,
-    setEmail,
-    sms,
-    setSms,
-    tel,
-    setTel,
-    geo,
-    setGeo,
-    vevent,
-    setVEvent,
-    crypto,
-    setCrypto,
-    ecLevel,
-    setEcLevel,
-    fgColor,
-    setFgColor,
-    bgColor,
-    setBgColor,
-    design,
-    setDesign,
-    rawValue,
-    liveValue,
-    isPending,
-    isUsable,
-    capacityUsed: capacity.used,
-    capacityMax: capacity.max,
-    isOverCapacity: capacity.isOverLimit,
-    inputError,
-  };
+  const store: QrContentStore = useMemo(
+    () => ({
+      contentMode,
+      setContentMode,
+      text,
+      setText,
+      wifi,
+      setWifi,
+      vcard,
+      setVCard,
+      email,
+      setEmail,
+      sms,
+      setSms,
+      tel,
+      setTel,
+      geo,
+      setGeo,
+      vevent,
+      setVEvent,
+      crypto,
+      setCrypto,
+      ecLevel,
+      setEcLevel,
+      fgColor,
+      setFgColor,
+      bgColor,
+      setBgColor,
+      design,
+      setDesign,
+      rawValue,
+      liveValue,
+      isPending,
+      isUsable,
+      capacityUsed: capacity.used,
+      capacityMax: capacity.max,
+      isOverCapacity: capacity.isOverLimit,
+      inputError,
+    }),
+    [
+      contentMode,
+      text,
+      wifi,
+      setWifi,
+      vcard,
+      setVCard,
+      email,
+      setEmail,
+      sms,
+      setSms,
+      tel,
+      setTel,
+      geo,
+      setGeo,
+      vevent,
+      setVEvent,
+      crypto,
+      setCrypto,
+      ecLevel,
+      fgColor,
+      bgColor,
+      design,
+      setDesign,
+      rawValue,
+      liveValue,
+      isPending,
+      isUsable,
+      capacity.used,
+      capacity.max,
+      capacity.isOverLimit,
+      inputError,
+    ],
+  );
 
   return <QrContentContext.Provider value={store}>{children}</QrContentContext.Provider>;
 }
