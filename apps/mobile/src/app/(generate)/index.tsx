@@ -215,6 +215,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 17,
     paddingVertical: Spacing.xs / 2,
+    minHeight: MinTouchTarget,
   },
   capacityCounter: {
     alignSelf: 'flex-end',
