@@ -6,7 +6,16 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
 import Svg, { Path, Rect } from 'react-native-svg'
 
 import { ThemedText } from '@/components/themed-text'
-import { useTheme } from '@/hooks/use-theme'
+import { DEFAULT_QR_BG_COLOR, DEFAULT_QR_FG_COLOR } from '@/constants/qrDefaults'
+
+// The empty state previews the same warm paper the eventual QR sits on
+// (DEFAULT_QR_BG_COLOR/FG_COLOR — concrete hex per CLAUDE.md, not theme
+// tokens, since it must read the same in light or dark UI) instead of a
+// generic dashed wireframe box (impeccable critique: "the exact
+// wireframe/template convention PRODUCT.md's anti-references reject").
+// Ink at reduced opacity stands in for a themed secondary color, since
+// nothing here follows the app theme.
+const PLACEHOLDER_INK = 'rgba(26, 22, 18, 0.6)'
 
 // Renders the same path data apps/web composes in qrSvgComposer.ts, via
 // react-native-svg instead of a raw SVG string — no frame or gradient
@@ -24,8 +33,6 @@ export interface QrPreviewProps {
 const CELL_SIZE = 10
 
 export function QrPreview({ value, ecLevel, fgColor, bgColor, design, size, isPending }: QrPreviewProps) {
-  const theme = useTheme()
-
   // generateQRPaths -> qrcode.create throws on an empty string ("No input
   // text"), so it must never run with one — guarded inside the memo (hooks
   // can't be called conditionally) rather than by skipping the memo itself.
@@ -53,16 +60,13 @@ export function QrPreview({ value, ecLevel, fgColor, bgColor, design, size, isPe
         key="placeholder"
         entering={FadeIn.duration(150)}
         exiting={FadeOut.duration(150)}
-        style={[
-          styles.placeholder,
-          { width: size, height: size, borderColor: theme.borderSubtle, backgroundColor: theme.surfaceInset },
-        ]}
+        style={[styles.placeholder, { width: size, height: size, backgroundColor: DEFAULT_QR_BG_COLOR }]}
         accessibilityRole="image"
         accessibilityLabel="QR code preview placeholder">
         {isPending ? (
-          <ActivityIndicator color={theme.textSecondary} />
+          <ActivityIndicator color={DEFAULT_QR_FG_COLOR} accessibilityLabel="Generating QR code" />
         ) : (
-          <ThemedText type="body" themeColor="textSecondary" style={styles.placeholderText}>
+          <ThemedText type="body" style={[styles.placeholderText, { color: PLACEHOLDER_INK }]}>
             Enter a value to generate a QR code
           </ThemedText>
         )}
@@ -111,9 +115,7 @@ const styles = StyleSheet.create({
   placeholder: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
-    borderWidth: 2,
-    borderStyle: 'dashed',
+    borderRadius: 18,
   },
   placeholderText: {
     textAlign: 'center',
