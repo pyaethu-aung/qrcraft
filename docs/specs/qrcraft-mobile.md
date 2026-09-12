@@ -1,8 +1,8 @@
 ---
 slug: qrcraft-mobile
 title: QRCraft mobile app in React Native
-status: proposed
-branch: docs/monorepo-and-mobile-specs
+status: building
+branch: feat/qrcraft-mobile
 created: 2026-09-09
 ---
 
@@ -215,4 +215,175 @@ Each step ends green. Steps 1 and 2 are the risk; do them before writing any scr
 
 ## Changes from plan
 
-<!-- Filled when this ships: what diverged from the above. -->
+All 10 build-sequence steps have working code; this section records what
+diverged along the way. Not yet shipped (no PR, no release) — see the
+per-step notes below for what's still genuinely open.
+
+**Steps 1–2 (scaffold, React alignment).** Both risks materialized exactly
+as flagged, but resolved within npm — the pnpm escape hatch was never
+needed. Expo's own SDK 57 template pins an *exact* `react@19.2.3` (not a
+caret range); npm's hoisting split that into two live React copies
+(RN internals on the root's `^19.2.8`, app code nested at `19.2.3`) — the
+precise "Invalid hook call" failure mode this step's risk table warned
+about, just from a different cause than expected (a version mismatch
+inside the same install, not a pnpm-vs-npm resolution difference). Fixed
+by tightening the whole workspace's `react`/`react-dom` range to `~19.2.8`
+(pinned, not just floored) — every workspace, including `apps/web` and
+`apps/mcp`, now resolves to one shared copy. A second, related surprise:
+`@testing-library/react-native` v14 depends on a brand-new `test-renderer`
+package whose "preferred" React line lagged the very latest 19.3.0 patch,
+breaking `renderHook` in a confusing way (`result.current` stayed
+`undefined`, "overlapping act() calls" warnings) that looked like a test
+bug before it was traced to the version mismatch.
+
+**Step 3 (nav shell).** Used `expo-router` on top of
+`expo-router/unstable-native-tabs` rather than hand-wiring
+`@react-navigation/{bottom-tabs,native-stack}` directly — same underlying
+libraries, file-based routing instead of manual navigator setup, and
+NativeTabs wraps the *real* native tab bar (UITabBarController /
+BottomNavigationView), so iOS 26 renders genuine system Liquid Glass in
+the tab bar for free. Known open issue: the native-stack header's
+`headerLargeTitle` title text doesn't paint on a screen whose root is a
+bare `ScrollView` under a `NativeTabs` tab (the space is correctly
+reserved, just blank) — not yet root-caused; suspected NativeTabs/
+native-stack integration gap given NativeTabs is explicitly `unstable_`.
+
+**Step 5 (structured form).** Built as one dynamic route
+(`(generate)/form.tsx`, keyed by a `type` param) serving all eight
+non-text content types from a shared field-schema renderer, rather than
+eight separate screen files — same core builders, much less duplication.
+Needed a piece of infrastructure the plan didn't call out: a
+`QrContentProvider` (React Context) at the root layout, above every tab,
+since Generate/Form/Design/Scan-result/Saved all now read and write the
+same content-mode + field state and are separate route stacks, not
+parent/child components the way apps/web's `QRControls` is. VEvent's
+start/end fields are plain text inputs in the ICS datetime format
+(`YYYY-MM-DDTHH:mm`), not a native date picker — `@react-native-community/
+datetimepicker` was scoped out of this pass; works, but is not the
+intended end-state UX.
+
+**Step 6 (design).** Basics/Advanced are tabs inside one modal sheet
+(`(generate)/design.tsx`), matching the mockups' segmented header exactly.
+Color selection is a tap-to-pick preset swatch grid (`PRESET_COLORS` in
+`constants/qrDefaults.ts`), not a free-form hex/HSV picker — React Native
+has no equivalent to web's `<input type="color">`, and building one was
+out of scope for this pass.
+
+**Step 7 (scan).** `react-native-vision-camera` was installed at its
+current default (v5.2.3, a "Nitro modules" rewrite) before discovering its
+QR/barcode detection API (`useObjectOutput`) is documented `@platform iOS`
+only in that version — Android has no code-scanning path there yet.
+Pinned to **v4.7.3** instead, whose `useCodeScanner` is the mature,
+genuinely cross-platform API. Scanning from a Photos-library image (the
+mockup's second button) is not built: decoding a *static* image needs raw
+pixel data (`@qrcraft/core/utils/qrDecode` expects exactly that), which
+needs its own image-loading pipeline this pass didn't build — live camera
+scanning is real and complete, Photos import is deferred. **Not verified
+on a physical device** — no camera on the Simulator, and a device was not
+available this session; per the spec's own note, this remains required
+before shipping.
+
+**Step 8 (saved, settings, persistence).** `react-native-mmkv` was also
+installed at its current default (v4, also Nitro-based) and needed a
+different API than expected — `createMMKV({id})`, not `new MMKV({id})`.
+Its Jest testing story needed a manual mock (`__mocks__/react-native-
+mmkv.ts` re-exporting the package's own `createMockMMKV`) since the real
+native module doesn't exist under Jest. Theme override (System/Light/
+Dark) is wired through `Appearance.setColorScheme()`, which is a genuine,
+real feature, not stubbed. FR-010 (credential drafts excluded from
+backups via Keychain/Keystore) is **not yet implemented** — saved codes
+and settings currently go through plain mmkv, which is not backup-
+excluded by default; this is a real gap against the spec, not a
+simplification, and should be treated as a blocker before any WiFi
+password ever gets saved to the library in production.
+
+**Step 9 (Liquid Glass).** Implemented as an opt-in `glass` prop on the
+shared `ThemedView` component (checks `isLiquidGlassAvailable()` from
+`expo-glass-effect`, falls back to the existing solid `surfaceRaised`
+fill otherwise — never fakes it with plain opacity, per the platform
+contract) rather than a parallel `GlassCard` component, so existing card
+call sites only needed the prop added, not a rewrite. Applied to the
+large card surfaces (Generate's input/preview cards, structured-form
+field cards, Scan result, Settings groups) — small chips and pills are
+still solid fills; glass reads better on larger panels and this was a
+reasonable place to stop for this pass. iOS-only by construction
+(`Platform.OS === 'ios'` gate); Android keeps its tonal-surface solid
+look, matching the platform contract.
+
+**Step 10 (store assets, compliance).** Camera permission usage strings
+are wired through the `react-native-vision-camera` Expo config plugin.
+Everything else in this step is explicitly a human task, not fabricated
+here: app icon and splash art are still Expo's own placeholder assets
+(not QRCraft-branded), the bundle identifier is still the placeholder
+`com.anonymous.qrcraft`, and no privacy policy, store listing, or
+screenshot was produced — see Human Prerequisites above, none of which
+changed.
+
+**Also found by device testing:** the app crashed on *every* launch after
+the vision-camera/mmkv native rebuild (`EXC_CRASH`/`SIGABRT`, TCC
+namespace: `NSCameraUsageDescription` missing from `Info.plist`), even
+though app.json's plugin config already declared it — the native `ios/`
+project had been generated by an earlier `expo run:ios` *before* that
+plugin config was added, and a plain rebuild never re-syncs app.json
+changes into an already-generated native project. Fixed with `npx expo
+prebuild --platform ios --clean`. Worth calling out because a screenshot
+taken a few seconds after launch looked identical to "still loading" —
+the crash was only caught by checking `~/Library/Logs/DiagnosticReports`
+directly.
+
+**Not part of any single step, found by device testing, not static
+analysis:** three real bugs only showed up once the app actually ran on
+the iOS Simulator, none of which `tsc`/`eslint`/`jest` caught: `QrPreview`
+crashed on mount because `generateQRPaths('')` was called unconditionally
+inside a `useMemo` on the empty-input placeholder path (`qrcode.create('')`
+throws); the content-type pill row silently rendered at zero height (a
+nested horizontal `ScrollView` needs an explicit height, not just a sized
+`contentContainerStyle`); and the reliability selector's labels wrapped
+mid-word because its parent card's centering shrank it to content width
+instead of the card's full width. All three are fixed, with a regression
+test added for the first. This is the concrete case for the skill's
+"gate ≠ done" discipline: every gate was green before any of these three
+were found.
+
+**Motion/interaction pass (post-review).** A `/emil-design-eng` review of
+the built screens found no press feedback on any button, instant (non-
+animated) state changes on selection controls, an abrupt QR placeholder/
+image swap, and a static Scan viewfinder with no proof-of-life motion —
+all fixed:
+
+- `components/pressable-scale.tsx`: a shared `PressableScale` (Reanimated
+  `withTiming` on `scale`, 100ms in / 160ms out) swapped in for every
+  `Pressable` in the app — asymmetric timing per the emil-design-eng
+  framework (press should feel immediate, release can be a touch slower).
+- Selection-state color transitions (150ms `interpolateColor`) on
+  `ContentTypePills`, `SegmentedControl`, and `SwatchRow`'s border.
+- `QrPreview`'s placeholder↔SVG swap and the "Copied"/"Cleared"
+  confirmation text now cross-fade (`FadeIn`/`FadeOut`, 120-150ms)
+  instead of popping.
+- `(scan)/index.tsx`: an animated gradient scan-line now travels inside
+  the viewfinder while the tab is focused (`withRepeat` + `ease-in-out`,
+  1.6s) — the mockup always had this, it was never built in step 7.
+- Needed a Jest manual mock for `react-native-reanimated`
+  (`apps/mobile/__mocks__/react-native-reanimated.tsx`) — same class of
+  problem as the mmkv mock: the real package needs a native worklets
+  module that doesn't exist under Jest.
+
+**Three more device-only bugs, caught from direct user feedback on a
+screenshot (not from the gate, not from the design review):**
+
+1. **Tab bar icons were huge.** The original hand-drawn PNGs were a
+   single 72×72px file with no `@2x`/`@3x` suffix — React Native treats
+   an unsuffixed asset as unscaled `@1x`, so a 72px-wide image rendered
+   at 72 *points*, three times the intended 24pt. Fixed by regenerating a
+   real `@1x`/`@2x`/`@3x` set, and separately switching iOS to real SF
+   Symbols (`square.grid.2x2`, `viewfinder`, `bookmark`) — correct
+   scaling and vector quality with zero further asset work; the fixed
+   PNG set is now only the Android fallback.
+2. **The header was reliably blank on first paint.** Rather than keep
+   chasing the `headerLargeTitle` + `NativeTabs` integration bug noted
+   above, `headerLargeTitle` is now off everywhere — a normal header
+   always paints its title. The collapsing-large-title look from the
+   mockups is now a tracked, deliberate gap, not an intermittent bug.
+3. **Saved's header button was a hand-drawn three-dot glyph** standing
+   in for "more" — swapped for `lucide-react-native`'s real `Settings`
+   (gear) icon, matching what the button actually does.
