@@ -49,3 +49,5 @@ playwright/.cache/
 # Design canvas build output: the seeded page is ~2.8 MB because the canvas editor
 # is baked into it. Regenerate from docs/specs/qrcraft-mobile-design/ instead.
 qrcraft-react-native.html
+
+.cache/develop-react-native-feature/

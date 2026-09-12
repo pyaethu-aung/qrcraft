@@ -42,7 +42,7 @@ export default defineConfig([
     // leave window/document/navigator recognized as valid globals in the MCP
     // server too, defeating the point of scoping them out.
     files: ['**/*.{ts,tsx}'],
-    ignores: ['apps/mcp/**/*.ts'],
+    ignores: ['apps/mcp/**/*.ts', 'apps/mobile/**/*.{ts,tsx}'],
     extends: [
       js.configs.recommended,
       ...tseslint.configs.recommendedTypeChecked,
@@ -87,6 +87,26 @@ export default defineConfig([
     },
   },
   {
+    // apps/mobile (Expo/React Native): own tsconfig for typed linting, since
+    // it's a separate TS project from web/core/mcp. Browser-ish globals
+    // (fetch, console, timers) match what the RN runtime actually provides.
+    files: ['apps/mobile/**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommendedTypeChecked,
+      reactHooks.configs.flat.recommended,
+      prettier,
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+      parserOptions: {
+        project: ['./apps/mobile/tsconfig.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+  {
     // FR-003: @qrcraft/core must stay free of React, the DOM, and storage
     // APIs so a non-browser consumer (apps/mcp, a future mobile app) can
     // import it unmodified.
@@ -115,6 +135,11 @@ export default defineConfig([
   },
   {
     files: ['**/*.{js,jsx}'],
+    ignores: [
+      'apps/mobile/metro.config.js',
+      'apps/mobile/jest.config.js',
+      'apps/mobile/scripts/**/*.js',
+    ],
     extends: [
       js.configs.recommended,
       reactHooks.configs.flat.recommended,
@@ -127,6 +152,17 @@ export default defineConfig([
     },
     rules: {
       'react-refresh/only-export-components': 'off',
+    },
+  },
+  {
+    // Node-run config/scripts, not app source: Metro's and Jest's own config
+    // files and the Expo template's CommonJS reset-project script.
+    files: ['apps/mobile/metro.config.js', 'apps/mobile/jest.config.js', 'apps/mobile/scripts/**/*.js'],
+    extends: [js.configs.recommended, prettier],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'commonjs',
+      globals: globals.node,
     },
   },
 ])
