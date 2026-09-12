@@ -1,0 +1,190 @@
+import { useRouter } from 'expo-router';
+import { Palette } from 'lucide-react-native';
+import { useEffect } from 'react';
+import { ScrollView, Share, StyleSheet, TextInput } from 'react-native';
+import Animated, { FadeIn, FadeOut, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+
+import { ContentTypePills } from '@/components/content-type-pills';
+import { PressableScale } from '@/components/pressable-scale';
+import { QrPreview } from '@/components/qr-preview';
+import { ReliabilitySelector } from '@/components/reliability-selector';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { MinTouchTarget, Radius, ScrollContentBottomInset, Spacing } from '@/constants/theme';
+import { useQrContent } from '@/hooks/qr-content-store';
+import { useTheme } from '@/hooks/use-theme';
+
+const QR_PREVIEW_SIZE = 220;
+
+export default function GenerateScreen() {
+  const theme = useTheme();
+  const router = useRouter();
+  const {
+    text,
+    setText,
+    liveValue,
+    ecLevel,
+    setEcLevel,
+    fgColor,
+    bgColor,
+    design,
+    inputError,
+    isUsable,
+    isPending,
+    capacityUsed,
+    capacityMax,
+    isOverCapacity,
+  } = useQrContent();
+
+  const shareDisabled = !isUsable;
+
+  // Both animate a state the interface confirms after the fact (find-
+  // animation-opportunities review), not per-keystroke data — the 150ms
+  // duration and FadeIn/FadeOut match the convention already used by Pill,
+  // SegmentedControl, SwatchRow, and QrPreview's crossfade.
+  const shareOpacity = useSharedValue(shareDisabled ? 0.5 : 1);
+  useEffect(() => {
+    shareOpacity.value = withTiming(shareDisabled ? 0.5 : 1, { duration: 150 });
+  }, [shareDisabled, shareOpacity]);
+  const shareAnimatedStyle = useAnimatedStyle(() => ({ opacity: shareOpacity.value }));
+
+  return (
+    // ScrollView is the screen's own root (not wrapped in another View) —
+    // react-native-screens' native-stack header (headerLargeTitle) only
+    // integrates its content-inset/collapse behavior correctly with a
+    // direct-child scroll view. Wrapping it in a container View left the
+    // first screenful of content hidden behind the expanded large title.
+    <ScrollView
+      style={[styles.container, { backgroundColor: theme.surface }]}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled">
+      <ContentTypePills />
+
+      <ThemedView type="surfaceRaised" glass style={styles.inputCard}>
+        <ThemedText type="label" themeColor="textSecondary">
+          Link
+        </ThemedText>
+        <TextInput
+          value={text}
+          onChangeText={setText}
+          placeholder="Paste or type a URL"
+          placeholderTextColor={theme.textDisabled}
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="url"
+          style={[styles.input, { color: theme.textPrimary }]}
+        />
+        <ThemedText
+          type="mono"
+          themeColor={isOverCapacity ? 'error' : 'textSecondary'}
+          style={styles.capacityCounter}>
+          {capacityUsed}/{capacityMax}
+        </ThemedText>
+        {inputError ? (
+          <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(120)}>
+            <ThemedText type="body" themeColor="error">
+              {inputError}
+            </ThemedText>
+          </Animated.View>
+        ) : null}
+      </ThemedView>
+
+      <ThemedView type="surfaceRaised" glass style={styles.previewCard}>
+        <QrPreview
+          value={liveValue}
+          ecLevel={ecLevel}
+          fgColor={fgColor}
+          bgColor={bgColor}
+          design={design}
+          size={QR_PREVIEW_SIZE}
+          isPending={isPending}
+        />
+        <ReliabilitySelector value={ecLevel} onChange={setEcLevel} />
+      </ThemedView>
+
+      <PressableScale
+        disabled
+        accessibilityRole="button"
+        accessibilityState={{ disabled: true }}
+        style={[styles.primaryButton, { minHeight: MinTouchTarget, backgroundColor: theme.actionDisabled }]}>
+        <ThemedText type="label" themeColor="actionFg">
+          Save to Photos (coming soon)
+        </ThemedText>
+      </PressableScale>
+
+      <ThemedView style={styles.secondaryRow}>
+        <PressableScale
+          disabled={shareDisabled}
+          onPress={() => {
+            void Share.share({ message: liveValue });
+          }}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: shareDisabled }}
+          style={[styles.secondaryButton, { backgroundColor: theme.surfaceRaised }, shareAnimatedStyle]}>
+          <ThemedText type="label" themeColor="action">
+            Share
+          </ThemedText>
+        </PressableScale>
+
+        <PressableScale
+          onPress={() => router.push('/(generate)/design')}
+          accessibilityRole="button"
+          style={[styles.secondaryButton, { backgroundColor: theme.surfaceRaised }]}>
+          <Palette size={18} color={theme.action} />
+          <ThemedText type="label" themeColor="action">
+            Design
+          </ThemedText>
+        </PressableScale>
+      </ThemedView>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    padding: Spacing.md,
+    paddingBottom: ScrollContentBottomInset,
+    gap: Spacing.md,
+  },
+  inputCard: {
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
+    gap: Spacing.xs / 2,
+  },
+  input: {
+    fontSize: 17,
+    paddingVertical: Spacing.xs / 2,
+  },
+  capacityCounter: {
+    alignSelf: 'flex-end',
+  },
+  previewCard: {
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  primaryButton: {
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: MinTouchTarget,
+  },
+  secondaryRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    backgroundColor: 'transparent',
+  },
+  secondaryButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    borderRadius: Radius.full,
+    minHeight: MinTouchTarget,
+  },
+});
