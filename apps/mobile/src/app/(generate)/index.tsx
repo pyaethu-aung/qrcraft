@@ -91,7 +91,8 @@ export default function GenerateScreen() {
     <ScrollView
       style={[styles.container, { backgroundColor: theme.surface }]}
       contentContainerStyle={styles.content}
-      keyboardShouldPersistTaps="handled">
+      keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets>
       <ContentTypePills />
 
       <ThemedView type="surfaceRaised" glass style={styles.inputCard}>
