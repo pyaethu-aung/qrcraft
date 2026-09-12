@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import { Palette } from 'lucide-react-native';
 import { useEffect } from 'react';
 import { ScrollView, Share, StyleSheet, TextInput } from 'react-native';
@@ -130,7 +131,12 @@ export default function GenerateScreen() {
           onPress={() => router.push('/(generate)/design')}
           accessibilityRole="button"
           style={[styles.secondaryButton, { backgroundColor: theme.surfaceRaised }]}>
-          <Palette size={18} color={theme.action} />
+          <SymbolView
+            name={{ ios: 'paintpalette' }}
+            size={18}
+            tintColor={theme.action}
+            fallback={<Palette size={18} color={theme.action} />}
+          />
           <ThemedText type="label" themeColor="action">
             Design
           </ThemedText>
