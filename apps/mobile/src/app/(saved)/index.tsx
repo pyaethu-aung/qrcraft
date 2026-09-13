@@ -9,9 +9,7 @@ import { ThemedText } from '@/components/themed-text';
 import { MinTouchTarget, Radius, ScrollContentBottomInset, Spacing } from '@/constants/theme';
 import { useQrContent } from '@/hooks/qr-content-store';
 import { useTheme } from '@/hooks/use-theme';
-import { addSavedCode, getSavedCodes, removeSavedCode, type SavedCode } from '@/utils/storage';
-
-const MAX_SAVED_CODES = 10;
+import { addSavedCode, getSavedCodes, MAX_SAVED_CODES, removeSavedCode, type SavedCode } from '@/utils/storage';
 
 export default function SavedScreen() {
   const theme = useTheme();
@@ -43,13 +41,12 @@ export default function SavedScreen() {
 
   const handleSaveCurrent = () => {
     if (!canSaveCurrent) return;
-    addSavedCode({ value: liveValue, contentMode, ecLevel, fgColor, bgColor, design });
-    setCodes(getSavedCodes());
+    const result = addSavedCode({ value: liveValue, contentMode, ecLevel, fgColor, bgColor, design });
+    if (result) setCodes(result.all);
   };
 
   const handleDelete = (id: string) => {
-    removeSavedCode(id);
-    setCodes(getSavedCodes());
+    setCodes(removeSavedCode(id));
   };
 
   const handleLoad = (code: SavedCode) => {

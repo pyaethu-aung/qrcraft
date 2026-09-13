@@ -12,9 +12,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useTimedFlag } from '@/hooks/use-timed-flag';
-import { clearScanHistory, getSavedCodes, getSettings, setSettings, type AppSettings } from '@/utils/storage';
-
-const MAX_SAVED_CODES = 10;
+import { clearScanHistory, getSavedCodes, getSettings, MAX_SAVED_CODES, setSettings, type AppSettings } from '@/utils/storage';
 
 export default function SettingsScreen() {
   const theme = useTheme();

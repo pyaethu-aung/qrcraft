@@ -46,19 +46,30 @@ function writeJson(key: string, value: unknown): void {
   storage.set(key, JSON.stringify(value));
 }
 
+export const MAX_SAVED_CODES = 10;
+
 export function getSavedCodes(): SavedCode[] {
   return readJson<SavedCode[]>(SAVED_CODES_KEY, []);
 }
 
-export function addSavedCode(code: Omit<SavedCode, 'id' | 'createdAt'>): SavedCode {
+/** Returns the updated list along with the new entry, so callers that need
+ * the fresh list (to update their own state) don't have to re-read and
+ * re-parse what this just wrote. Returns `null` when already at the
+ * MAX_SAVED_CODES cap — enforced here, not just in the UI's save gate, so
+ * no future caller can bypass it. */
+export function addSavedCode(code: Omit<SavedCode, 'id' | 'createdAt'>): { entry: SavedCode; all: SavedCode[] } | null {
+  const existing = getSavedCodes();
+  if (existing.length >= MAX_SAVED_CODES) return null;
   const entry: SavedCode = { ...code, id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, createdAt: Date.now() };
-  const all = [entry, ...getSavedCodes()];
+  const all = [entry, ...existing];
   writeJson(SAVED_CODES_KEY, all);
-  return entry;
+  return { entry, all };
 }
 
-export function removeSavedCode(id: string): void {
-  writeJson(SAVED_CODES_KEY, getSavedCodes().filter((c) => c.id !== id));
+export function removeSavedCode(id: string): SavedCode[] {
+  const all = getSavedCodes().filter((c) => c.id !== id);
+  writeJson(SAVED_CODES_KEY, all);
+  return all;
 }
 
 export function clearSavedCodes(): void {

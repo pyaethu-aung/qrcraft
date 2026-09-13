@@ -7,9 +7,19 @@ import {
   getSavedCodes,
   getScanHistory,
   getSettings,
+  MAX_SAVED_CODES,
   removeSavedCode,
   setSettings,
 } from '@/utils/storage';
+
+const A_SAVED_CODE = {
+  value: 'https://example.com',
+  contentMode: 'text' as const,
+  ecLevel: 'M' as const,
+  fgColor: '#1A1612',
+  bgColor: '#FAF6F1',
+  design: DEFAULT_QR_DESIGN_CONFIG,
+};
 
 describe('storage', () => {
   beforeEach(() => {
@@ -23,20 +33,26 @@ describe('storage', () => {
   });
 
   it('adds and removes a saved code', () => {
-    const saved = addSavedCode({
-      value: 'https://example.com',
-      contentMode: 'text',
-      ecLevel: 'M',
-      fgColor: '#1A1612',
-      bgColor: '#FAF6F1',
-      design: DEFAULT_QR_DESIGN_CONFIG,
-    });
+    const result = addSavedCode(A_SAVED_CODE);
+    expect(result).not.toBeNull();
 
     expect(getSavedCodes()).toHaveLength(1);
     expect(getSavedCodes()[0].value).toBe('https://example.com');
+    expect(result!.all).toEqual(getSavedCodes());
 
-    removeSavedCode(saved.id);
+    const remaining = removeSavedCode(result!.entry.id);
+    expect(remaining).toEqual([]);
     expect(getSavedCodes()).toHaveLength(0);
+  });
+
+  it('refuses to add past MAX_SAVED_CODES', () => {
+    for (let i = 0; i < MAX_SAVED_CODES; i++) {
+      expect(addSavedCode(A_SAVED_CODE)).not.toBeNull();
+    }
+    expect(getSavedCodes()).toHaveLength(MAX_SAVED_CODES);
+
+    expect(addSavedCode(A_SAVED_CODE)).toBeNull();
+    expect(getSavedCodes()).toHaveLength(MAX_SAVED_CODES);
   });
 
   it('records scan history newest-first and caps at 50', () => {
@@ -49,14 +65,7 @@ describe('storage', () => {
   });
 
   it('clears scan history independently of saved codes', () => {
-    addSavedCode({
-      value: 'a',
-      contentMode: 'text',
-      ecLevel: 'M',
-      fgColor: '#1A1612',
-      bgColor: '#FAF6F1',
-      design: DEFAULT_QR_DESIGN_CONFIG,
-    });
+    addSavedCode(A_SAVED_CODE);
     addScanHistoryEntry('b');
 
     clearScanHistory();
