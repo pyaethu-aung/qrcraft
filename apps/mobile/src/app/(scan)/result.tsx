@@ -12,6 +12,7 @@ import { ThemedView } from '@/components/themed-view';
 import { MinTouchTarget, Radius, ScrollContentBottomInset, Spacing } from '@/constants/theme';
 import { useQrContent } from '@/hooks/qr-content-store';
 import { useTheme } from '@/hooks/use-theme';
+import { useTimedFlag } from '@/hooks/use-timed-flag';
 import { addScanHistoryEntry, getScanHistory, type ScanHistoryEntry } from '@/utils/storage';
 
 const TYPE_LABELS: Record<string, string> = {
@@ -35,7 +36,7 @@ export default function ScanResultScreen() {
   // Snapshot taken before this scan is recorded, so "Recent scans" shows
   // scans *before* the current one rather than duplicating it at the top.
   const [history] = useState<ScanHistoryEntry[]>(() => getScanHistory());
-  const [copied, setCopied] = useState(false);
+  const [copied, triggerCopied] = useTimedFlag();
 
   const decoded = value ?? '';
   const contentType = classifyDecoded(decoded);
@@ -87,8 +88,7 @@ export default function ScanResultScreen() {
         <PressableScale
           onPress={() => {
             void Clipboard.setStringAsync(decoded);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
+            triggerCopied();
           }}
           accessibilityRole="button"
           style={[styles.secondaryButton, { backgroundColor: theme.surfaceRaised }]}>
