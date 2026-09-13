@@ -1,9 +1,10 @@
 import type { QREyeCenterShape, QREyeFrameShape, QRGradientDirection, QRPixelPattern } from '@qrcraft/core';
 import { useRouter } from 'expo-router';
-import { AlertTriangle, Check } from 'lucide-react-native';
+import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
+import { Callout } from '@/components/callout';
 import { ColorChip } from '@/components/color-chip';
 import { PressableScale } from '@/components/pressable-scale';
 import { EyeCenterIcon, EyeFrameIcon, PixelPatternIcon } from '@/components/design-swatch-icons';
@@ -216,18 +217,6 @@ function Section({ label, children }: { label: string; children: React.ReactNode
   );
 }
 
-function Callout({ text }: { text: string }) {
-  const theme = useTheme();
-  return (
-    <View style={[styles.callout, { backgroundColor: theme.warningSurface, borderColor: theme.warningBorder }]}>
-      <AlertTriangle size={18} color={theme.warning} />
-      <ThemedText type="body" themeColor="warning" style={{ flex: 1 }}>
-        {text}
-      </ThemedText>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -251,14 +240,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     gap: Spacing.sm,
-  },
-  callout: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.xs,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    padding: Spacing.sm,
   },
   directionRow: {
     flexDirection: 'row',

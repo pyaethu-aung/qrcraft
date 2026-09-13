@@ -1,8 +1,8 @@
 import type { QRContentMode } from '@qrcraft/core';
 import { cryptoUnit } from '@qrcraft/core';
-import { AlertTriangle } from 'lucide-react-native';
-import { StyleSheet, Switch, View } from 'react-native';
+import { StyleSheet, Switch } from 'react-native';
 
+import { Callout } from '@/components/callout';
 import { FormField } from '@/components/form-field';
 import { SegmentedControl } from '@/components/segmented-control';
 import { ThemedText } from '@/components/themed-text';
@@ -163,18 +163,6 @@ export function ContentFields({ mode, store }: { mode: QRContentMode; store: Ret
   }
 }
 
-function Callout({ text }: { text: string }) {
-  const theme = useTheme();
-  return (
-    <View style={[styles.callout, { backgroundColor: theme.warningSurface, borderColor: theme.warningBorder }]}>
-      <AlertTriangle size={18} color={theme.warning} />
-      <ThemedText type="body" themeColor="warning" style={{ flex: 1 }}>
-        {text}
-      </ThemedText>
-    </View>
-  );
-}
-
 function ToggleRow({
   label,
   value,
@@ -208,13 +196,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  callout: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.xs,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    padding: Spacing.sm,
   },
 });
