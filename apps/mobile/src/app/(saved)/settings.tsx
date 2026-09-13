@@ -6,6 +6,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { PressableScale } from '@/components/pressable-scale';
 import { SegmentedControl } from '@/components/segmented-control';
+import { Section } from '@/components/section';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Radius, Spacing } from '@/constants/theme';
@@ -33,7 +34,7 @@ export default function SettingsScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.surface }]} contentContainerStyle={styles.content}>
-      <Section label="Appearance">
+      <Section label="Appearance" labelStyle={styles.sectionLabel}>
         <ThemedView type="surfaceRaised" glass style={[styles.group, styles.row]}>
           <ThemedText type="body">Theme</ThemedText>
           <SegmentedControl
@@ -48,7 +49,7 @@ export default function SettingsScreen() {
         </ThemedView>
       </Section>
 
-      <Section label="Defaults">
+      <Section label="Defaults" labelStyle={styles.sectionLabel}>
         <ThemedView type="surfaceRaised" glass style={styles.group}>
           <SettingsRow label="Saved designs" value={`${savedCount} of ${MAX_SAVED_CODES}`} />
           <PressableScale
@@ -73,7 +74,7 @@ export default function SettingsScreen() {
         </ThemedView>
       </Section>
 
-      <Section label="About">
+      <Section label="About" labelStyle={styles.sectionLabel}>
         <ThemedView type="surfaceRaised" glass style={styles.group}>
           <SettingsRow label="Version" value={Constants.expoConfig?.version ?? '1.0.0'} last />
         </ThemedView>
@@ -82,17 +83,6 @@ export default function SettingsScreen() {
         </ThemedText>
       </Section>
     </ScrollView>
-  );
-}
-
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <View style={{ gap: Spacing.xs }}>
-      <ThemedText type="label" themeColor="textSecondary" style={{ paddingHorizontal: 4 }}>
-        {label}
-      </ThemedText>
-      {children}
-    </View>
   );
 }
 
@@ -111,6 +101,9 @@ function SettingsRow({ label, value, last }: { label: string; value: string; las
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  sectionLabel: {
+    paddingHorizontal: 4,
   },
   content: {
     padding: Spacing.md,
