@@ -35,11 +35,25 @@ export default function ContentScreen() {
   const store = useQrContent();
   const [step, setStep] = useState<Step>(store.rawValue.trim() ? 'fields' : 'type');
 
+  // The sheet's own presentation already slides it up — without this guard,
+  // whichever panel renders first also plays its SlideIn entrance at the
+  // same time, so the grid (or fields) visibly slides in a second time from
+  // the side right as the sheet opens. Only true step-to-step transitions
+  // should animate, so this flips (from the event handlers below, never an
+  // effect) the first time the user actually changes steps, not on mount.
+  const [animateEntry, setAnimateEntry] = useState(false);
+
   const meta = CONTENT_TYPE_META[store.contentMode];
 
   const selectType = (mode: QRContentMode) => {
     store.setContentMode(mode);
     setStep('fields');
+    setAnimateEntry(true);
+  };
+
+  const goBackToType = () => {
+    setStep('type');
+    setAnimateEntry(true);
   };
 
   return (
@@ -47,7 +61,7 @@ export default function ContentScreen() {
       <View style={styles.header}>
         {step === 'fields' ? (
           <PressableScale
-            onPress={() => setStep('type')}
+            onPress={goBackToType}
             accessibilityRole="button"
             accessibilityLabel="Change content type"
             style={styles.backButton}>
@@ -83,7 +97,7 @@ export default function ContentScreen() {
         {step === 'type' ? (
           <Animated.View
             key="type"
-            entering={SlideInLeft.duration(220)}
+            entering={animateEntry ? SlideInLeft.duration(220) : undefined}
             exiting={SlideOutLeft.duration(220)}
             style={styles.stepPanel}>
             <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
@@ -93,7 +107,7 @@ export default function ContentScreen() {
         ) : (
           <Animated.View
             key="fields"
-            entering={SlideInRight.duration(220)}
+            entering={animateEntry ? SlideInRight.duration(220) : undefined}
             exiting={SlideOutRight.duration(220)}
             style={styles.stepPanel}>
             <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
