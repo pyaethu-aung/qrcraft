@@ -9,6 +9,7 @@ import { ColorChip } from '@/components/color-chip';
 import { PressableScale } from '@/components/pressable-scale';
 import { EyeCenterIcon, EyeFrameIcon, PixelPatternIcon } from '@/components/design-swatch-icons';
 import { SegmentedControl } from '@/components/segmented-control';
+import { Section } from '@/components/section';
 import { SwatchRow } from '@/components/swatch-row';
 import { ThemedText } from '@/components/themed-text';
 import { DEFAULT_QR_BG_COLOR, DEFAULT_QR_DESIGN_CONFIG, DEFAULT_QR_FG_COLOR } from '@/constants/qrDefaults';
@@ -202,17 +203,6 @@ export default function DesignScreen() {
           </ThemedText>
         </PressableScale>
       </ScrollView>
-    </View>
-  );
-}
-
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <View style={{ gap: Spacing.xs }}>
-      <ThemedText type="label" themeColor="textSecondary">
-        {label}
-      </ThemedText>
-      {children}
     </View>
   );
 }
