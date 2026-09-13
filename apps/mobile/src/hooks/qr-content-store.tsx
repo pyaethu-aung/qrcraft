@@ -22,7 +22,7 @@ import type {
   VEventConfig,
   WiFiConfig,
 } from '@qrcraft/core';
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import {
   DEFAULT_QR_BG_COLOR,
@@ -31,6 +31,7 @@ import {
   DEFAULT_QR_FG_COLOR,
   QR_INPUT_LENGTH_LIMIT,
 } from '@/constants/qrDefaults';
+import { usePatchState } from '@/hooks/use-patch-state';
 
 // Shared across the Generate and structured-form screens (they're separate
 // routes, not parent/child components like apps/web's QRControls, so the
@@ -159,40 +160,26 @@ const QrContentContext = createContext<QrContentStore | null>(null);
 export function QrContentProvider({ children }: { children: ReactNode }) {
   const [contentMode, setContentMode] = useState<QRContentMode>('text');
   const [text, setText] = useState('');
-  const [wifi, setWifiState] = useState<WiFiConfig>(EMPTY_WIFI);
-  const [vcard, setVCardState] = useState<VCardConfig>(EMPTY_VCARD);
-  const [email, setEmailState] = useState<EmailConfig>(EMPTY_EMAIL);
-  const [sms, setSmsState] = useState<SmsConfig>(EMPTY_SMS);
-  const [tel, setTelState] = useState<TelConfig>(EMPTY_TEL);
-  const [geo, setGeoState] = useState<GeoConfig>(EMPTY_GEO);
-  const [vevent, setVEventState] = useState<VEventConfig>(EMPTY_VEVENT);
-  const [crypto, setCryptoState] = useState<CryptoConfig>(EMPTY_CRYPTO);
+  // usePatchState covers every per-content-type config plus the design
+  // config below: one object, patched field-by-field, with a stable setter
+  // identity — a plain useCallback-wrapped setter per type here would hand
+  // every consumer a brand-new store object and brand-new setter functions
+  // on every keystroke otherwise (found by an /impeccable audit).
+  const [wifi, setWifi] = usePatchState<WiFiConfig>(EMPTY_WIFI);
+  const [vcard, setVCard] = usePatchState<VCardConfig>(EMPTY_VCARD);
+  const [email, setEmail] = usePatchState<EmailConfig>(EMPTY_EMAIL);
+  const [sms, setSms] = usePatchState<SmsConfig>(EMPTY_SMS);
+  const [tel, setTel] = usePatchState<TelConfig>(EMPTY_TEL);
+  const [geo, setGeo] = usePatchState<GeoConfig>(EMPTY_GEO);
+  const [vevent, setVEvent] = usePatchState<VEventConfig>(EMPTY_VEVENT);
+  const [crypto, setCrypto] = usePatchState<CryptoConfig>(EMPTY_CRYPTO);
 
   const [ecLevel, setEcLevel] = useState<QRErrorCorrectionLevel>(DEFAULT_QR_EC_LEVEL);
   const [fgColor, setFgColor] = useState(DEFAULT_QR_FG_COLOR);
   const [bgColor, setBgColor] = useState(DEFAULT_QR_BG_COLOR);
-  const [design, setDesignState] = useState<QRDesignConfig>(DEFAULT_QR_DESIGN_CONFIG);
+  const [design, setDesign] = usePatchState<QRDesignConfig>(DEFAULT_QR_DESIGN_CONFIG);
 
   const [liveValue, setLiveValue] = useState('');
-
-  // useCallback with no deps: the underlying setState setters (setWifiState
-  // etc.) are themselves stable, so these wrappers can have a stable
-  // identity too — without it, every QrContentProvider render (i.e. every
-  // keystroke in any field) handed every consumer a brand-new store object
-  // and brand-new setter functions, re-rendering all of them regardless of
-  // what they actually read (found by an /impeccable audit).
-  const setWifi = useCallback((patch: Partial<WiFiConfig>) => setWifiState((prev) => ({ ...prev, ...patch })), []);
-  const setVCard = useCallback((patch: Partial<VCardConfig>) => setVCardState((prev) => ({ ...prev, ...patch })), []);
-  const setEmail = useCallback((patch: Partial<EmailConfig>) => setEmailState((prev) => ({ ...prev, ...patch })), []);
-  const setSms = useCallback((patch: Partial<SmsConfig>) => setSmsState((prev) => ({ ...prev, ...patch })), []);
-  const setTel = useCallback((patch: Partial<TelConfig>) => setTelState((prev) => ({ ...prev, ...patch })), []);
-  const setGeo = useCallback((patch: Partial<GeoConfig>) => setGeoState((prev) => ({ ...prev, ...patch })), []);
-  const setVEvent = useCallback(
-    (patch: Partial<VEventConfig>) => setVEventState((prev) => ({ ...prev, ...patch })),
-    [],
-  );
-  const setCrypto = useCallback((patch: Partial<CryptoConfig>) => setCryptoState((prev) => ({ ...prev, ...patch })), []);
-  const setDesign = useCallback((patch: Partial<QRDesignConfig>) => setDesignState((prev) => ({ ...prev, ...patch })), []);
 
   const configs = { text, wifi, vcard, email, sms, tel, geo, vevent, crypto };
   const rawValue = buildRawValue(contentMode, configs);
