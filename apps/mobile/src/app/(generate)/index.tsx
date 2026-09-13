@@ -1,46 +1,64 @@
 import { Asset, requestPermissionsAsync } from 'expo-media-library';
 import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { Palette } from 'lucide-react-native';
+import { Palette, Pencil } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, Share, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, Share, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { captureRef } from 'react-native-view-shot';
 
-import { ContentTypePills } from '@/components/content-type-pills';
 import { PressableScale } from '@/components/pressable-scale';
 import { QrPreview } from '@/components/qr-preview';
 import { ReliabilitySelector } from '@/components/reliability-selector';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { CONTENT_TYPE_META } from '@/constants/content-types';
 import { MinTouchTarget, Radius, ScrollContentBottomInset, Spacing } from '@/constants/theme';
-import { useQrContent } from '@/hooks/qr-content-store';
+import { useQrContent, type QrContentStore } from '@/hooks/qr-content-store';
 import { useTheme } from '@/hooks/use-theme';
 
 const QR_PREVIEW_SIZE = 220;
 
+function contentSummary(store: QrContentStore): { title: string; caption: string } {
+  const hasContent = Boolean(store.rawValue.trim());
+  if (!hasContent) {
+    return { title: 'Add content', caption: 'Tap to choose a content type' };
+  }
+
+  const title = CONTENT_TYPE_META[store.contentMode].label;
+  switch (store.contentMode) {
+    case 'text':
+      return { title, caption: store.text };
+    case 'wifi':
+      return { title, caption: store.wifi.ssid || 'Network' };
+    case 'vcard':
+      return { title, caption: `${store.vcard.firstName} ${store.vcard.lastName}`.trim() || 'Contact card' };
+    case 'email':
+      return { title, caption: store.email.to || 'Email draft' };
+    case 'sms':
+      return { title, caption: store.sms.number || 'Text message' };
+    case 'tel':
+      return { title, caption: store.tel.number || 'Phone number' };
+    case 'geo':
+      return {
+        title,
+        caption: store.geo.latitude && store.geo.longitude ? `${store.geo.latitude}, ${store.geo.longitude}` : 'Map location',
+      };
+    case 'vevent':
+      return { title, caption: store.vevent.summary || 'Calendar event' };
+    case 'crypto':
+      return { title, caption: store.crypto.address || 'Crypto address' };
+  }
+}
+
 export default function GenerateScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const {
-    text,
-    setText,
-    liveValue,
-    ecLevel,
-    setEcLevel,
-    fgColor,
-    bgColor,
-    design,
-    inputError,
-    isUsable,
-    isPending,
-    capacityUsed,
-    capacityMax,
-    isNearCapacity,
-    isOverCapacity,
-  } = useQrContent();
+  const store = useQrContent();
+  const { liveValue, ecLevel, setEcLevel, fgColor, bgColor, design, isUsable, isPending } = store;
 
   const shareDisabled = !isUsable;
+  const summary = contentSummary(store);
 
   // Both animate a state the interface confirms after the fact (find-
   // animation-opportunities review), not per-keystroke data — the 150ms
@@ -95,53 +113,46 @@ export default function GenerateScreen() {
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
       automaticallyAdjustKeyboardInsets>
-      <ContentTypePills />
-
-      <ThemedView type="surfaceRaised" glass style={styles.inputCard}>
-        <ThemedText type="label" themeColor="textSecondary">
-          Link
-        </ThemedText>
-        <TextInput
-          value={text}
-          onChangeText={setText}
-          placeholder="Paste or type a URL"
-          placeholderTextColor={theme.textSecondary}
-          autoCapitalize="none"
-          autoCorrect={false}
-          keyboardType="url"
-          style={[styles.input, { color: theme.textPrimary }]}
-        />
-        <ThemedText
-          type="mono"
-          themeColor={isOverCapacity ? 'error' : isNearCapacity ? 'warning' : 'textSecondary'}
-          style={styles.capacityCounter}
-          accessibilityLabel={`${capacityUsed} of ${capacityMax} characters used`}>
-          {capacityUsed}/{capacityMax}
-        </ThemedText>
-        {inputError ? (
-          <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(120)}>
-            <ThemedText type="body" themeColor="error">
-              {inputError}
-            </ThemedText>
-          </Animated.View>
-        ) : null}
-      </ThemedView>
-
       <ThemedView type="surfaceRaised" glass style={styles.previewCard}>
-        {/* collapsable={false}: without it Android can optimize this plain
-            wrapper out of the native tree, and react-native-view-shot has
-            nothing to capture. */}
-        <View ref={qrCaptureRef} collapsable={false}>
-          <QrPreview
-            value={liveValue}
-            ecLevel={ecLevel}
-            fgColor={fgColor}
-            bgColor={bgColor}
-            design={design}
-            size={QR_PREVIEW_SIZE}
-            isPending={isPending}
-          />
+        {/* The QR preview is the single entry point for content: tapping it
+            opens the two-step content sheet (choose type -> edit fields)
+            instead of the pills row + inline Link field this screen used
+            to show side by side (emil-design-eng / impeccable review,
+            "Link's input is on Generate screen, but other inputs are in a
+            separate screen"). */}
+        <PressableScale
+          onPress={() => router.push('/(generate)/content')}
+          accessibilityRole="button"
+          accessibilityLabel={summary.title === 'Add content' ? 'Add content' : `Edit ${summary.title.toLowerCase()} content`}
+          style={styles.previewTap}>
+          {/* collapsable={false}: without it Android can optimize this plain
+              wrapper out of the native tree, and react-native-view-shot has
+              nothing to capture. */}
+          <View ref={qrCaptureRef} collapsable={false}>
+            <QrPreview
+              value={liveValue}
+              ecLevel={ecLevel}
+              fgColor={fgColor}
+              bgColor={bgColor}
+              design={design}
+              size={QR_PREVIEW_SIZE}
+              isPending={isPending}
+            />
+          </View>
+          <View style={[styles.editBadge, { backgroundColor: theme.action }]}>
+            <SymbolView name={{ ios: 'pencil' }} size={14} tintColor={theme.actionFg} fallback={<Pencil size={14} color={theme.actionFg} />} />
+          </View>
+        </PressableScale>
+
+        <View style={styles.captionBlock}>
+          <ThemedText type="label" themeColor="textPrimary">
+            {summary.title}
+          </ThemedText>
+          <ThemedText type="body" themeColor="textSecondary" numberOfLines={1} style={styles.captionValue}>
+            {summary.caption}
+          </ThemedText>
         </View>
+
         <ReliabilitySelector value={ecLevel} onChange={setEcLevel} />
       </ThemedView>
 
@@ -211,24 +222,31 @@ const styles = StyleSheet.create({
     paddingBottom: ScrollContentBottomInset,
     gap: Spacing.md,
   },
-  inputCard: {
-    borderRadius: Radius.lg,
-    padding: Spacing.md,
-    gap: Spacing.xs / 2,
-  },
-  input: {
-    fontSize: 17,
-    paddingVertical: Spacing.xs / 2,
-    minHeight: MinTouchTarget,
-  },
-  capacityCounter: {
-    alignSelf: 'flex-end',
-  },
   previewCard: {
     borderRadius: Radius.lg,
     padding: Spacing.md,
     alignItems: 'center',
     gap: Spacing.md,
+  },
+  previewTap: {
+    position: 'relative',
+  },
+  editBadge: {
+    position: 'absolute',
+    right: -6,
+    bottom: -6,
+    width: 32,
+    height: 32,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  captionBlock: {
+    alignItems: 'center',
+    gap: Spacing.xs / 4,
+  },
+  captionValue: {
+    maxWidth: 260,
   },
   primaryButton: {
     borderRadius: Radius.full,

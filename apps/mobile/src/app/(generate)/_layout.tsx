@@ -24,7 +24,13 @@ export default function GenerateStackLayout() {
         headerTintColor: colors.textPrimary,
       }}>
       <Stack.Screen name="index" options={{ title: 'Generate' }} />
-      <Stack.Screen name="form" />
+      <Stack.Screen
+        name="content"
+        options={{
+          presentation: 'modal',
+          headerShown: false,
+        }}
+      />
       <Stack.Screen
         name="design"
         options={{
