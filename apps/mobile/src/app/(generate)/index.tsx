@@ -85,13 +85,11 @@ export default function GenerateScreen() {
     try {
       // Write-only request: this app only ever adds a photo, never reads
       // the library, so it asks for the narrower NSPhotoLibraryAddUsageDescription
-      // permission rather than full read/write access. Capturing the
-      // already-rendered view doesn't depend on that permission, so it runs
-      // alongside the prompt instead of waiting on it.
-      const [permission, uri] = await Promise.all([
-        requestPermissionsAsync(true),
-        captureRef(qrCaptureRef, { format: 'png', quality: 1 }),
-      ]);
+      // permission rather than full read/write access. Requested before
+      // capturing (not in parallel): capturing costs a real render/encode,
+      // and on the common first-save/denied path that work would be
+      // thrown away, not saved by running it alongside the prompt.
+      const permission = await requestPermissionsAsync(true);
       if (!permission.granted) {
         Alert.alert(
           'Photo library access needed',
@@ -99,6 +97,7 @@ export default function GenerateScreen() {
         );
         return;
       }
+      const uri = await captureRef(qrCaptureRef, { format: 'png', quality: 1 });
       await Asset.create(uri);
       triggerSavedFeedback();
     } catch {
