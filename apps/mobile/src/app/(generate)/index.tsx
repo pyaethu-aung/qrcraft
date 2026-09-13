@@ -100,7 +100,8 @@ export default function GenerateScreen() {
       const uri = await captureRef(qrCaptureRef, { format: 'png', quality: 1 });
       await Asset.create(uri);
       triggerSavedFeedback();
-    } catch {
+    } catch (error) {
+      console.error('Failed to save QR code to Photos', error);
       Alert.alert('Couldn’t save', 'Something went wrong saving your QR code. Please try again.');
     } finally {
       setIsSaving(false);
