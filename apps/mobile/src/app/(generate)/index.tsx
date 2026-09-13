@@ -16,6 +16,7 @@ import { CONTENT_TYPE_META } from '@/constants/content-types';
 import { MinTouchTarget, Radius, ScrollContentBottomInset, Spacing } from '@/constants/theme';
 import { useQrContent, type QrContentStore } from '@/hooks/qr-content-store';
 import { useTheme } from '@/hooks/use-theme';
+import { useTimedFlag } from '@/hooks/use-timed-flag';
 
 const QR_PREVIEW_SIZE = 220;
 
@@ -76,7 +77,7 @@ export default function GenerateScreen() {
 
   const qrCaptureRef = useRef<View>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [savedFeedback, setSavedFeedback] = useState(false);
+  const [savedFeedback, triggerSavedFeedback] = useTimedFlag();
 
   const handleSaveToPhotos = async () => {
     if (isSaving) return;
@@ -95,8 +96,7 @@ export default function GenerateScreen() {
       }
       const uri = await captureRef(qrCaptureRef, { format: 'png', quality: 1 });
       await Asset.create(uri);
-      setSavedFeedback(true);
-      setTimeout(() => setSavedFeedback(false), 1500);
+      triggerSavedFeedback();
     } catch {
       Alert.alert('Couldn’t save', 'Something went wrong saving your QR code. Please try again.');
     } finally {

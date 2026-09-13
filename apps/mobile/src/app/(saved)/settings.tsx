@@ -11,6 +11,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { useTimedFlag } from '@/hooks/use-timed-flag';
 import { clearScanHistory, getSavedCodes, getSettings, setSettings, type AppSettings } from '@/utils/storage';
 
 const MAX_SAVED_CODES = 10;
@@ -19,7 +20,7 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const [settings, setSettingsState] = useState<AppSettings>(() => getSettings());
   const [savedCount, setSavedCount] = useState(0);
-  const [historyCleared, setHistoryCleared] = useState(false);
+  const [historyCleared, triggerHistoryCleared] = useTimedFlag();
 
   useFocusEffect(
     useCallback(() => {
@@ -55,8 +56,7 @@ export default function SettingsScreen() {
           <PressableScale
             onPress={() => {
               clearScanHistory();
-              setHistoryCleared(true);
-              setTimeout(() => setHistoryCleared(false), 1500);
+              triggerHistoryCleared();
             }}
             accessibilityRole="button"
             style={styles.settingsRow}>
