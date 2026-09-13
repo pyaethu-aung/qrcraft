@@ -15,7 +15,20 @@ const MAX_SAVED_CODES = 10;
 
 export default function SavedScreen() {
   const theme = useTheme();
-  const { liveValue, contentMode, ecLevel, fgColor, bgColor, design, setText, setContentMode } = useQrContent();
+  const {
+    liveValue,
+    contentMode,
+    ecLevel,
+    fgColor,
+    bgColor,
+    design,
+    setText,
+    setContentMode,
+    setEcLevel,
+    setFgColor,
+    setBgColor,
+    setDesign,
+  } = useQrContent();
   const [codes, setCodes] = useState<SavedCode[]>([]);
 
   // mmkv is synchronous, so a plain re-read on focus (not a subscription)
@@ -42,6 +55,10 @@ export default function SavedScreen() {
   const handleLoad = (code: SavedCode) => {
     setContentMode('text');
     setText(code.value);
+    setEcLevel(code.ecLevel);
+    setFgColor(code.fgColor);
+    setBgColor(code.bgColor);
+    setDesign(code.design);
   };
 
   return (
