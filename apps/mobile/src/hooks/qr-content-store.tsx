@@ -95,18 +95,46 @@ function buildRawValue(mode: QRContentMode, configs: {
   }
 }
 
-/** Raw field-length proxy for the capacity counter — the built payload for
- * structured modes, or the text field itself in text mode (matches
- * apps/web: the counter measures what the user is typing, not the built
- * payload, so it stays meaningful even while a required field is missing).
- * Takes the already-built rawValue rather than calling buildRawValue again. */
-function rawCapacityInput(
-  mode: QRContentMode,
-  configs: Parameters<typeof buildRawValue>[1],
-  builtRawValue: string,
-): string {
-  if (mode === 'text') return configs.text;
-  return builtRawValue || JSON.stringify(configs[mode]);
+/** Raw field bytes for the capacity counter — matches apps/web's
+ * `structuredContent[mode].raw` (QRGenerator.tsx): the concatenated typed
+ * fields, not the built payload, so the counter stays meaningful even
+ * while a required field is missing, and not JSON.stringify(config),
+ * which would count key names and punctuation as if the user typed them. */
+function rawCapacityInput(mode: QRContentMode, configs: Parameters<typeof buildRawValue>[1]): string {
+  switch (mode) {
+    case 'text':
+      return configs.text;
+    case 'wifi':
+      return configs.wifi.ssid + configs.wifi.password;
+    case 'vcard':
+      return (
+        configs.vcard.firstName +
+        configs.vcard.lastName +
+        configs.vcard.phone +
+        configs.vcard.email +
+        configs.vcard.company +
+        configs.vcard.jobTitle +
+        configs.vcard.website
+      );
+    case 'email':
+      return configs.email.to + configs.email.subject + configs.email.body;
+    case 'sms':
+      return configs.sms.number + configs.sms.message;
+    case 'tel':
+      return configs.tel.number;
+    case 'geo':
+      return configs.geo.latitude + configs.geo.longitude;
+    case 'vevent':
+      return (
+        configs.vevent.summary +
+        configs.vevent.start +
+        configs.vevent.end +
+        configs.vevent.location +
+        configs.vevent.description
+      );
+    case 'crypto':
+      return configs.crypto.address + configs.crypto.amount + configs.crypto.label;
+  }
 }
 
 export interface QrContentStore {
@@ -189,7 +217,7 @@ export function QrContentProvider({ children }: { children: ReactNode }) {
       ? `Input too long (max ${QR_INPUT_LENGTH_LIMIT} characters)`
       : undefined;
 
-  const capacityInput = rawCapacityInput(contentMode, configs, rawValue);
+  const capacityInput = rawCapacityInput(contentMode, configs);
   const capacity = getCapacityStatus(capacityInput, ecLevel);
   const isBlocked = Boolean(inputError) || capacity.isOverLimit;
   const isUsable = Boolean(rawValue.trim()) && !isBlocked;
