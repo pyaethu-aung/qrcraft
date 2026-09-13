@@ -71,7 +71,7 @@ export function QrPreview({ value, ecLevel, fgColor, bgColor, design, size, isPe
           <ActivityIndicator color={theme.textSecondary} accessibilityLabel="Generating QR code" />
         ) : (
           <ThemedText type="body" themeColor="textSecondary" style={styles.placeholderText}>
-            Enter a value to generate a QR code
+            Tap to generate
           </ThemedText>
         )}
       </Animated.View>

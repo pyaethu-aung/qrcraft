@@ -19,10 +19,13 @@ import { useTheme } from '@/hooks/use-theme';
 
 const QR_PREVIEW_SIZE = 220;
 
-function contentSummary(store: QrContentStore): { title: string; caption: string } {
-  const hasContent = Boolean(store.rawValue.trim());
-  if (!hasContent) {
-    return { title: 'Add content', caption: 'Tap to choose a content type' };
+// null when there's nothing to summarize yet — the QR placeholder's own
+// "Tap to generate" already carries that message, so the caption below it
+// would only repeat it (per review feedback, "Add content" / "Tap to
+// choose a content type" isn't required).
+function contentSummary(store: QrContentStore): { title: string; caption: string } | null {
+  if (!store.rawValue.trim()) {
+    return null;
   }
 
   const title = CONTENT_TYPE_META[store.contentMode].label;
@@ -123,7 +126,7 @@ export default function GenerateScreen() {
         <PressableScale
           onPress={() => router.push('/(generate)/content')}
           accessibilityRole="button"
-          accessibilityLabel={summary.title === 'Add content' ? 'Add content' : `Edit ${summary.title.toLowerCase()} content`}
+          accessibilityLabel={summary ? `Edit ${summary.title.toLowerCase()} content` : 'Add content'}
           style={styles.previewTap}>
           {/* collapsable={false}: without it Android can optimize this plain
               wrapper out of the native tree, and react-native-view-shot has
@@ -144,14 +147,16 @@ export default function GenerateScreen() {
           </View>
         </PressableScale>
 
-        <View style={styles.captionBlock}>
-          <ThemedText type="label" themeColor="textPrimary">
-            {summary.title}
-          </ThemedText>
-          <ThemedText type="body" themeColor="textSecondary" numberOfLines={1} style={styles.captionValue}>
-            {summary.caption}
-          </ThemedText>
-        </View>
+        {summary ? (
+          <View style={styles.captionBlock}>
+            <ThemedText type="label" themeColor="textPrimary">
+              {summary.title}
+            </ThemedText>
+            <ThemedText type="body" themeColor="textSecondary" numberOfLines={1} style={styles.captionValue}>
+              {summary.caption}
+            </ThemedText>
+          </View>
+        ) : null}
 
         <ReliabilitySelector value={ecLevel} onChange={setEcLevel} />
       </ThemedView>
