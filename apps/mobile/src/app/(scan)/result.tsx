@@ -1,3 +1,4 @@
+import type { DecodedContentType } from '@qrcraft/core';
 import { classifyDecoded, getOpenableUrl } from '@qrcraft/core';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Copy, RefreshCw } from 'lucide-react-native';
@@ -9,22 +10,26 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { PressableScale } from '@/components/pressable-scale';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { CONTENT_TYPE_META } from '@/constants/content-types';
 import { MinTouchTarget, Radius, ScrollContentBottomInset, Spacing } from '@/constants/theme';
 import { useQrContent } from '@/hooks/qr-content-store';
 import { useTheme } from '@/hooks/use-theme';
 import { useTimedFlag } from '@/hooks/use-timed-flag';
 import { addScanHistoryEntry, getScanHistory, type ScanHistoryEntry } from '@/utils/storage';
 
-const TYPE_LABELS: Record<string, string> = {
-  url: 'Link',
-  wifi: 'Wi-Fi',
-  vcard: 'Contact',
-  email: 'Email',
-  sms: 'SMS',
-  tel: 'Phone',
-  geo: 'Location',
-  vevent: 'Event',
-  crypto: 'Crypto',
+// Derived from the single content-type label source (constants/content-types)
+// rather than re-typing every label a second time — only `url` and `text`
+// have no equivalent create-flow mode, so those two stay explicit.
+const TYPE_LABELS: Record<DecodedContentType, string> = {
+  url: CONTENT_TYPE_META.text.label,
+  wifi: CONTENT_TYPE_META.wifi.label,
+  vcard: CONTENT_TYPE_META.vcard.label,
+  email: CONTENT_TYPE_META.email.label,
+  sms: CONTENT_TYPE_META.sms.label,
+  tel: CONTENT_TYPE_META.tel.label,
+  geo: CONTENT_TYPE_META.geo.label,
+  vevent: CONTENT_TYPE_META.vevent.label,
+  crypto: CONTENT_TYPE_META.crypto.label,
   text: 'Text',
 };
 
